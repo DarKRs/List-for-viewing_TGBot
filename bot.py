@@ -14,7 +14,7 @@ bot = telebot.TeleBot(config.TOKEN)
 BDworker.Init()
 print(sys.version)
 
-kinopoisk.getCategory(507)
+kinopoisk.search_film_api("Лалаленд")
 
 
 @bot.message_handler(commands=['start'])

@@ -8,9 +8,42 @@ api_client = KinopoiskApiClient(config.KINOPOISK_TOKEN)
 def search_film_api(film):
     request = SearchByKeywordRequest(film)
     response = api_client.films.send_search_by_keyword_request(request)
-    return 'https://www.kinopoisk.ru/film/' + response.films[0].kinopoisk_id
+    if response.films.len() <= 0:
+        return null
+    else:
+        return response.films[0]
 
 def getCategory(film_id):
     request = FilmRequest(film_id)
     response = api_client.films.send_film_request(request)
-    return "test"
+    return response.film.genres[0]
+
+def getDescription(film_id):
+    request = FilmRequest(film_id)
+    response = api_client.films.send_film_request(request)
+    return response.film.description
+
+def getYear(film_id):
+    request = FilmRequest(film_id)
+    response = api_client.films.send_film_request(request)
+    return response.film.year
+
+def getFullName(film_id):
+    request = FilmRequest(film_id)
+    response = api_client.films.send_film_request(request)
+    return response.film.name_ru + " (" + response.film.name_original + ")" 
+
+def getName_ru(film_id):
+    request = FilmRequest(film_id)
+    response = api_client.films.send_film_request(request)
+    return response.film.name_ru
+
+def getName_orig(film_id):
+    request = FilmRequest(film_id)
+    response = api_client.films.send_film_request(request)
+    return response.film.name_original
+
+def getUrl(film_id):
+    request = FilmRequest(film_id)
+    response = api_client.films.send_film_request(request)
+    return response.film.web_url

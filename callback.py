@@ -19,10 +19,8 @@ def howAreU_back(bot,call):
                                       text="ЭТО ТЕСТОВОЕ УВЕДОМЛЕНИЕ!!11")
 
 def newFilm_back(bot,call):
-    #search
-    people_id = call.message.chat.id
-    film_id = search_film_api(call.message.text)
-    film_url = "https://www.kinopoisk.ru/film/" + str(film_id)
+
+
     if call.data == 'film_Yes':
         bot.send_message(call.message.chat.id, 'Хорошо, сейчас добавлю в список')
     elif call.data == 'film_No':
