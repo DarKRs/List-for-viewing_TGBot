@@ -9,3 +9,8 @@ def search_film_api(film):
     request = SearchByKeywordRequest(film)
     response = api_client.films.send_search_by_keyword_request(request)
     return 'https://www.kinopoisk.ru/film/' + response.films[0].kinopoisk_id
+
+def getCategory(film_id):
+    request = FilmRequest(film_id)
+    response = api_client.films.send_film_request(request)
+    return "test"

@@ -1,9 +1,15 @@
 import kinopoisk
 import telebot
 
-#def search_f(film):
-
 from telebot import types
+
+def search_f(bot,message,film):
+    bot.send_message(message.chat.id, 'Это новый фильм для списка - '+ message.text + ' ?')
+
+    markup = types.InlineKeyboardMarkup(row_width=2)
+    item1 = types.InlineKeyboardButton("Да", callback_data='film_Yes')
+    item2 = types.InlineKeyboardButton("Нет", callback_data='film_No')
+
 
 #def randNumber(message):
 
