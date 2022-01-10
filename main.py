@@ -13,8 +13,10 @@ from telebot import types
 bot = telebot.TeleBot(config.TOKEN)
 BDworker.Init()
 print(sys.version)
+sda = "123s"
 
-kinopoisk.search_film_api("Лалаленд")
+kinopoisk.search_film_api('Терминатор')
+user_data = []
 
 
 @bot.message_handler(commands=['start'])
@@ -22,8 +24,8 @@ def welcome(message):
 
     BDworker.addUser(message)
     sti = open('static/bersHi.webp', 'rb')
-    bot.send_sticker(message.chat.id, sti)
-
+  #  bot.send_sticker(message.chat.id, sti)
+    user_data.append(message.chat.id)
     # keyboard
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton("🎲 Рандомное число")
@@ -46,7 +48,7 @@ def lalala(message):
            #case "test": bot.send_message(message.chat.id, "text")
            case '🎲 Рандомное число': bot.send_message(message.chat.id, str(random.randint(0, 100)))
            case '😊 Как дела?': func.howAreU(bot,message)
-           case _ : func.search_f(bot,message,message.text)
+           case _ : func.search_f(bot,message)
             
 
 

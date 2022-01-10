@@ -1,7 +1,7 @@
 import sqlite3
 import kinopoisk
 
-connect = sqlite3.connect('Main.db')
+connect = sqlite3.connect('Main.db',check_same_thread=False)
 cursor = connect.cursor()
 
 def Init():
