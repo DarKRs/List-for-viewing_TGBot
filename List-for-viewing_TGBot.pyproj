@@ -26,6 +26,9 @@
     <Compile Include="BDworker.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="film.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="main.py" />
     <Compile Include="callback.py">
       <SubType>Code</SubType>
@@ -36,6 +39,12 @@
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|PythonCore|3.10" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="static\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="static\bersHi.webp" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

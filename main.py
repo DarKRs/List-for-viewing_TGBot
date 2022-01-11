@@ -7,21 +7,22 @@ import sys
 import callback
 import BDworker
 
-
+from BDworker import users_dict
 from telebot import types
+from keyboa import Keyboa
 
 bot = telebot.TeleBot(config.TOKEN)
-BDworker.Init()
-print(sys.version)
-sda = "123s"
 
-kinopoisk.search_film_api('Терминатор')
-user_data = []
+def Init():
+    BDworker.Init()
+    print(sys.version)
+
+
+Init()
 
 
 @bot.message_handler(commands=['start'])
 def welcome(message):
-
     BDworker.addUser(message)
     sti = open('static/bersHi.webp', 'rb')
   #  bot.send_sticker(message.chat.id, sti)
@@ -42,26 +43,33 @@ def welcome(message):
 
 @bot.message_handler(content_types=['text'])
 def lalala(message):
-
     if message.chat.type == 'private':
        match message.text:
            #case "test": bot.send_message(message.chat.id, "text")
            case '🎲 Рандомное число': bot.send_message(message.chat.id, str(random.randint(0, 100)))
            case '😊 Как дела?': func.howAreU(bot,message)
-           case _ : func.search_f(bot,message)
+           case 'test': 
+            menu = ["spam", "eggs", "ham"]
+            keyboard = Keyboa(items=menu)
+            bot.send_message(chat_id=message.chat.id, text="Test Keyboa", reply_markup=keyboard())
+           case _ : bot.register_next_step_handler(message, func.search_f(bot,message)); #следующий шаг func.search_f
             
-
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
     try:
         if call.message:
-            match call.data:
-                case 'good' | 'bad': callback.howAreU_back(bot,call)
-                case 'film_Yes' | 'film_No' : bot.send_message(call.message.chat.id, 'Заглушка')
-                case _ : bot.send_message(call.message.chat.id, 'Я не знаю что ответить')
+            if '&film_id=' in call.data:
+                call.data.split("=")[1]
+            else:
+                match call.data:
+                    case 'good' | 'bad': callback.howAreU_back(bot,call)
+                    case _ : bot.send_message(call.message.chat.id, 'Я не знаю что ответить')
     except Exception as e:
         print(repr(e))
+
+
+
 
 
 # RUN

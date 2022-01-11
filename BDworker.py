@@ -1,13 +1,17 @@
 import sqlite3
 import kinopoisk
 
+users_dict = {}
+movies_dict = {}
+
 connect = sqlite3.connect('Main.db',check_same_thread=False)
 cursor = connect.cursor()
 
 def Init():
     #Users
     cursor.execute("""CREATE TABLE IF NOT EXISTS Users(
-        id INTEGER PRIMARY KEY
+        id INTEGER PRIMARY KEY,
+        UserName TEXT
     )""")
     connect.commit()
 
@@ -30,10 +34,12 @@ def addUser(message):
     cursor.execute(f"SELECT id FROM Users Where id = {people_id}")
     data = cursor.fetchone()
     if data is None:
-            #values
-            user_id = [message.chat.id]
-            cursor.execute("INSERT INTO Users VALUES(?);",user_id)
+            #BD
+            user_id = [message.chat.id, message.from_user.username]
+            cursor.execute("INSERT INTO Users VALUES(?,?);",user_id)
             connect.commit()
+            #Dict
+            users_dict.update(user_id)
     else:
         print("Debug: Пользователь с id - " + str(people_id) + " уже существует в БД")
 
