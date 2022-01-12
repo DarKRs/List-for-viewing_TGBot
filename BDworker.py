@@ -27,6 +27,13 @@ def Init():
         USER_ID INTEGER
     )""")
     connect.commit()
+    #Dictionarys
+    #connect.row_factory = dict_factory
+    cursor.execute("SELECT id as id, UserName as UserName FROM Users")
+    users_dict = cursor.fetchall()
+
+
+
 
 def addUser(message):
     #search
@@ -69,3 +76,9 @@ def addMovieByTitle(user_id, film_name):
             movies_dict.update(film)
     else:
         print("Debug: Фильм - " + str(film_name) + " уже есть в списке пользователя с id" + str(user_id))
+
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d

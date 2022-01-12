@@ -26,6 +26,9 @@
     <Compile Include="BDworker.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="config.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="film.py">
       <SubType>Code</SubType>
     </Compile>
@@ -33,7 +36,6 @@
     <Compile Include="callback.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="config.py" />
     <Compile Include="func.py" />
     <Compile Include="kinopoisk.py" />
   </ItemGroup>

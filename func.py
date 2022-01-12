@@ -18,7 +18,6 @@ def search_f(bot,message):
             ]
 
 
-       # text = 'Вот что мне удалось найти: \n\r' + '1.' + str(film_list[0].name_ru) + ' (' + str(film_list[0].name_original) + ') \n\r' + '2.' + str(film_list[1].name_ru) + ' (' + str(film_list[1].name_original) + ') \n\r' + '3.' + str(film_list[2].name_ru) + ' (' + str(film_list[2].name_original) + ') \n\r' + 'Выберите фильм, или нажмите "Добавить как есть"'
         text = 'Вот что мне удалось найти: \n\r' + '1. ' + str(makeTextFound(film_list[0],message.text)) + '\n\r' + '2. ' + str(makeTextFound(film_list[1],message.text)) + '\n\r' + '3. ' + str(makeTextFound(film_list[2],message.text)) + '\n\r' + 'Выберите фильм, или нажмите "Добавить как есть"'
         kb_films = Keyboa(items=films, items_in_row=3, copy_text_to_callback=True,front_marker="&film_id=")
 
