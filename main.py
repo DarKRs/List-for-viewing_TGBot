@@ -48,11 +48,7 @@ def lalala(message):
            #case "test": bot.send_message(message.chat.id, "text")
            case '🎲 Рандомное число': bot.send_message(message.chat.id, str(random.randint(0, 100)))
            case '😊 Как дела?': func.howAreU(bot,message)
-           case 'test': 
-            menu = ["spam", "eggs", "ham"]
-            keyboard = Keyboa(items=menu)
-            bot.send_message(chat_id=message.chat.id, text="Test Keyboa", reply_markup=keyboard())
-           case _ : bot.register_next_step_handler(message, func.search_f(bot,message)); #следующий шаг func.search_f
+           case _ : func.search_f(bot,message)
             
 
 @bot.callback_query_handler(func=lambda call: True)

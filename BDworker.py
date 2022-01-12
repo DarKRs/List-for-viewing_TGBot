@@ -23,7 +23,7 @@ def Init():
         Kinopoisk TEXT,
         Category TEXT,
         Watched INTEGER,
-        Description TEXT
+        Description TEXT,
         USER_ID INTEGER
     )""")
     connect.commit()
@@ -31,8 +31,6 @@ def Init():
     #connect.row_factory = dict_factory
     cursor.execute("SELECT id as id, UserName as UserName FROM Users")
     users_dict = cursor.fetchall()
-    cursor.close()
-
 
 
 
@@ -74,7 +72,7 @@ def addMovieByTitle(user_id, film_name):
             cursor.execute("INSERT INTO Movies(USER_ID,Name) VALUES(?,?);",film)
             connect.commit()
             #Dict
-            movies_dict.update(film)
+            #movies_dict.update(film)
     else:
         print("Debug: Фильм - " + str(film_name) + " уже есть в списке пользователя с id" + str(user_id))
 

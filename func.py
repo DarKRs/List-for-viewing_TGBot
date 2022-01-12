@@ -18,7 +18,7 @@ def search_f(bot,message):
 
     else:
          bot.send_message(message.chat.id, "Не удалось найти фильм.....\n\r Добавляю \"Как есть\"")
-         BDworker.addMovieByTitle(message.text)
+         BDworker.addMovieByTitle(message.chat.id, message.text)
 
 
 #def randNumber(message):
