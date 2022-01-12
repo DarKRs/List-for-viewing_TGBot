@@ -64,7 +64,8 @@ def callback_inline(call):
                     BDworker.addMovieByTitle(call.message.chat.id, call.data.split("=")[2])
                     bot.send_message(call.message.chat.id, 'Фильм - ' + call.data.split("=")[2] + '.\n\rДобавлен в список без дополнительной информации')
                 else:
-                    call.data.split("=")[1]
+                    BDworker.addMovie(call.data.split("=")[1])
+                    bot.send_message(call.message.chat.id, 'Фильм - ' + str(kinopoisk.getFullName(call.data.split("=")[1])) + 'Добавлен в ваш список :)')
             else:
                 match call.data:
                     case 'good' | 'bad': callback.howAreU_back(bot,call)

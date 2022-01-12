@@ -31,6 +31,7 @@ def Init():
     #connect.row_factory = dict_factory
     cursor.execute("SELECT id as id, UserName as UserName FROM Users")
     users_dict = cursor.fetchall()
+    cursor.close()
 
 
 
@@ -51,7 +52,7 @@ def addUser(message):
     else:
         print("Debug: Пользователь с id - " + str(people_id) + " уже существует в БД")
 
-def addMovie(back):
+def addMovie(film_id):
     #info
     people_id = call.message.chat.id
     film_id = search_film_api(call.message.text)
