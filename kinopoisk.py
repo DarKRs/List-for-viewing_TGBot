@@ -34,7 +34,10 @@ def getYear(film_id):
 def getFullName(film_id):
     request = FilmRequest(film_id)
     response = api_client.films.send_film_request(request)
-    return response.film.name_ru + " (" + response.film.name_original + ")" 
+    if response.film.name_original is None:
+        return response.film.name_ru + " ( )" 
+    else:
+        return response.film.name_ru + " (" + response.film.name_original + ")" 
 
 def getName_ru(film_id):
     request = FilmRequest(film_id)

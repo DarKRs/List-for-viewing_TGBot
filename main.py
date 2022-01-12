@@ -25,8 +25,8 @@ Init()
 def welcome(message):
     BDworker.addUser(message)
     sti = open('static/bersHi.webp', 'rb')
-  #  bot.send_sticker(message.chat.id, sti)
-    user_data.append(message.chat.id)
+    bot.send_sticker(message.chat.id, sti)
+
     # keyboard
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton("🎲 Рандомное число")
@@ -36,8 +36,8 @@ def welcome(message):
     markup.add(item1, item2, item3)
 
     bot.send_message(message.chat.id,
-                     "Добро пожаловать, {0.first_name}!\nЯ - , бот созданный чтобы запоминать фильмы, мультфильмы, сериалы и т.д. необходымые к просмотру. \n Что то вроде блокнотика с фильмами ;).".format(
-                         message.from_user, bot.get_me()),
+                     "Добро пожаловать, {0.first_name}!\nЯ - , бот созданный чтобы запоминать фильмы, мультфильмы, сериалы и т.д. необходымые к просмотру. \nЧто то вроде блокнотика с фильмами ;).".format(
+                         message.from_user),
                      parse_mode='html', reply_markup=markup)
 
 
@@ -60,7 +60,11 @@ def callback_inline(call):
     try:
         if call.message:
             if '&film_id=' in call.data:
-                call.data.split("=")[1]
+                if '&film_name=' in call.data:
+                    BDworker.addMovieByTitle(call.message.chat.id, call.data.split("=")[2])
+                    bot.send_message(call.message.chat.id, 'Фильм - ' + call.data.split("=")[2] + '.\n\rДобавлен в список без дополнительной информации')
+                else:
+                    call.data.split("=")[1]
             else:
                 match call.data:
                     case 'good' | 'bad': callback.howAreU_back(bot,call)

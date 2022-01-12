@@ -19,8 +19,5 @@ def howAreU_back(bot,call):
                                       text="ЭТО ТЕСТОВОЕ УВЕДОМЛЕНИЕ!!11")
 
 def newFilm_back(bot,id):
-    if id == "0":
-        pass
-    else:
-
+    pass
       
