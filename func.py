@@ -21,7 +21,13 @@ def search_f(bot,message):
          BDworker.addMovieByTitle(message.chat.id, message.text)
 
 
-#def randNumber(message):
+def writeFilmList(message):
+    films = BDworker.getUserFilms(message.chat.id)
+    if len(films) > 0:
+
+    else:
+        bot.send_message(message.chat.id, "В вашем списке нет фильмов!\n\rНапишите мне название фильма, и я добавлю его в список!")
+
 
 def howAreU(bot,message):
     markup = types.InlineKeyboardMarkup(row_width=2)
@@ -31,6 +37,8 @@ def howAreU(bot,message):
     markup.add(item1, item2)
 
     bot.send_message(message.chat.id, 'Отлично, сам как?', reply_markup=markup)
+
+#Formating text
 
 def takeName(film_name, user_film_name):
     if film_name is None:

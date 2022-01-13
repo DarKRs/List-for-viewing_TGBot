@@ -1,7 +1,9 @@
 import sqlite3
 import kinopoisk
+import film
 
 users_dict = {}
+movies_dict_query = {}
 movies_dict = {}
 
 connect = sqlite3.connect('Main.db',check_same_thread=False)
@@ -29,9 +31,15 @@ def Init():
     connect.commit()
     #Dictionarys
     #connect.row_factory = dict_factory
-    cursor.execute("SELECT id as id, UserName as UserName FROM Users")
+    cursor.execute("SELECT * FROM Users")
     users_dict = cursor.fetchall()
-
+    cursor.execute("SELECT * FROM Movies")
+    movies_dict_query = cursor.fetchall()
+    for movie in movies_dict_query:
+        if movies_dict.get(movie[7]) is None:
+            movies_dict.update({movie[7]:[convertToFilm(movie)]})
+        else:
+            movies_dict[movie[7]] += [convertToFilm(movie)]
 
 
 def addUser(message):
@@ -81,3 +89,6 @@ def dict_factory(cursor, row):
     for idx, col in enumerate(cursor.description):
         d[col[0]] = row[idx]
     return d
+
+def convertToFilm(movie):
+    return film.Film(movie[7],movie[0],movie[1],movie[2],movie[3],movie[4],movie[5],movie[6])

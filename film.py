@@ -1,4 +1,4 @@
-class film(object):
+class Film:
     """description of class"""
 
     def __init__(self, user_id, id, name, year, url, category, watched, desc):

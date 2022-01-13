@@ -48,6 +48,7 @@ def lalala(message):
            #case "test": bot.send_message(message.chat.id, "text")
            case '🎲 Рандомное число': bot.send_message(message.chat.id, str(random.randint(0, 100)))
            case '😊 Как дела?': func.howAreU(bot,message)
+           case '📄 Мой список': func.howAreU(bot,message)
            case _ : func.search_f(bot,message)
             
 
