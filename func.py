@@ -12,7 +12,7 @@ def search_f(bot,message):
         films = makeFilmList(film_obj_list, message.text)
         text = makeFilmText(film_obj_list, message.text)
         
-        kb_films = Keyboa(items=films, items_in_row=3, copy_text_to_callback=True,front_marker="&film_id=")
+        kb_films = Keyboa(items=films, items_in_row=3, copy_text_to_callback=True,front_marker="&f_id=")
 
         bot.send_message(message.chat.id, text, reply_markup=kb_films())
 
@@ -21,10 +21,15 @@ def search_f(bot,message):
          BDworker.addMovieByTitle(message.chat.id, message.text)
 
 
-def writeFilmList(message):
+def writeFilmList(bot,message):
     films = BDworker.getUserFilms(message.chat.id)
     if len(films) > 0:
+        text = makeFilmListText(films)
+        films_items = makeFilmListKeyboa(films)
 
+        kb_user_film_list = Keyboa(items=films_items, items_in_row=6, copy_text_to_callback=True,front_marker="&p_id=")
+
+        bot.send_message(message.chat.id, text, reply_markup=kb_user_film_list())
     else:
         bot.send_message(message.chat.id, "В вашем списке нет фильмов!\n\rНапишите мне название фильма, и я добавлю его в список!")
 
@@ -38,7 +43,7 @@ def howAreU(bot,message):
 
     bot.send_message(message.chat.id, 'Отлично, сам как?', reply_markup=markup)
 
-#Formating text
+#Formating text (SearchFilm)
 
 def takeName(film_name, user_film_name):
     if film_name is None:
@@ -58,20 +63,40 @@ def makeTextFound(film, user_film_name):
 
 def makeFilmList(film_obj_list, user_film_name):
     films_list = []
-    i=1
-    for film in film_obj_list:
+    for i,film in enumerate(film_obj_list,1):
         films_list.append({str(i)+". " + takeName(film.name_ru,user_film_name): str(film.kinopoisk_id)})
-        i+=1
-        if i > 3 : break
-    films_list.append({"Добавить как есть": "&film_name=" + user_film_name})
+        if i == 3 : break
+    films_list.append({"Добавить как есть": "&f_name=" + user_film_name})
     return films_list
 
 def makeFilmText(film_obj_list, user_film_name):
     films_text = 'Вот что мне удалось найти: \n\r'
-    i=1
-    for film in film_obj_list:
+    for i,film in enumerate(film_obj_list,1):
         films_text += str(i) + '. ' + str(makeTextFound(film,user_film_name)) + '\n\r'
-        i+=1
-        if i > 3 : break
+        if i == 3 : break
     films_text += 'Выберите фильм, или нажмите "Добавить как есть"'
     return films_text
+
+#Formating text (WriteFilmList)
+
+def makeFilmListText(films): 
+    films_list_text = "Ваш список:\n\r"
+    for i,film in enumerate(films,1):
+        films_list_text += str(i) + '. ' + str(film.name) + '\n\r'
+        if(i % 12) == 0 : 
+            print("Не больше 6 фильмов на страницу")
+            break 
+    return films_list_text
+        
+def makeFilmListKeyboa(films):
+    film_list_kb=[]
+    for i,film in enumerate(films,1):
+        id = film.kinopoisk_id
+        if film.kinopoisk_id is None:
+            id = 0
+        film_list_kb.append({str(i):id})
+        if i == 12: break
+    film_list_kb.append({"⏪":"prev_page"})
+    film_list_kb.append({"⏩":"next_page"})
+    return film_list_kb
+    

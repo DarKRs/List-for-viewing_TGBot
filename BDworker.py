@@ -22,7 +22,9 @@ def Init():
         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
         Name TEXT,
         Year INTEGER,
-        Kinopoisk TEXT,
+        Kinopoisk_id INTEGER,
+        Kinopoisk_url TEXT,
+        Genre TEXT,
         Category TEXT,
         Watched INTEGER,
         Description TEXT,
@@ -36,10 +38,10 @@ def Init():
     cursor.execute("SELECT * FROM Movies")
     movies_dict_query = cursor.fetchall()
     for movie in movies_dict_query:
-        if movies_dict.get(movie[7]) is None:
-            movies_dict.update({movie[7]:[convertToFilm(movie)]})
+        if movies_dict.get(movie[9]) is None:
+            movies_dict.update({movie[9]:[convertToFilm(movie)]})
         else:
-            movies_dict[movie[7]] += [convertToFilm(movie)]
+            movies_dict[movie[9]] += [convertToFilm(movie)]
 
 
 def addUser(message):
@@ -58,16 +60,32 @@ def addUser(message):
     else:
         print("Debug: Пользователь с id - " + str(people_id) + " уже существует в БД")
 
-def addMovie(film_id):
-    #info
-    people_id = call.message.chat.id
-    film_id = search_film_api(call.message.text)
-    film_name = getFullName(film_id)
-    film_year = getYear(film_id)
-    film_url = getUrl(film_id)
-    film_category = getCategory(film_id) 
-    film_watched = 0        #По умолчанию не просмотрен
-    film_desc = getDescription(film_id)
+def addMovie(film_id, user_id):
+    cursor.execute(f"SELECT id FROM Movies Where USER_ID = {user_id} and Kinopoisk_id = {film_id}")
+    data = cursor.fetchone()
+    if data is None:
+            #info
+            film_name = kinopoisk.getFullName(film_id)
+            film_year = kinopoisk.getYear(film_id)
+            film_url = kinopoisk.getUrl(film_id)
+            film_genre = convertGenretoStr(kinopoisk.getGenres(film_id))
+            film_category = kinopoisk.getCategory(film_id) 
+            film_watched = 0        #По умолчанию не просмотрен
+            film_desc = kinopoisk.getDescription(film_id)
+            #BD
+            film_list = [film_name,film_year,film_id,film_url, film_genre, film_category, film_watched, film_desc, user_id]
+            cursor.execute("INSERT INTO Movies( Name,Year,Kinopoisk_id,Kinopoisk_url,Genre,Category,Watched,Description,USER_ID) VALUES(?,?,?,?,?,?,?,?,?);",film_list)
+            connect.commit()
+            #dict
+            f_obj = film.Film(user_id,film_name,film_year,film_id,film_url, film_genre, film_category, film_watched, film_desc)
+            if movies_dict.get(user_id) is None:
+                movies_dict.update({user_id:[f_obj]})
+            else:
+                movies_dict[user_id] += [f_obj]
+            return True
+    else:
+        print("Debug: Фильм - " + str(film_name) + " уже есть в списке пользователя с id" + str(user_id))
+        return false
 
     #search
 
@@ -76,19 +94,29 @@ def addMovieByTitle(user_id, film_name):
     data = cursor.fetchone()
     if data is None:
             #BD
-            film = [user_id, film_name]
-            cursor.execute("INSERT INTO Movies(USER_ID,Name) VALUES(?,?);",film)
+            film_list = [user_id, film_name]
+            cursor.execute("INSERT INTO Movies(USER_ID,Name) VALUES(?,?);",film_list)
             connect.commit()
             #Dict
-            #movies_dict.update(film)
+            f_obj = film.Film(user_id=user_id,name=film_name )
+            if movies_dict.get(user_id) is None:
+                movies_dict.update({user_id:[f_obj]})
+            else:
+                movies_dict[user_id] += [f_obj]
+            return True
     else:
         print("Debug: Фильм - " + str(film_name) + " уже есть в списке пользователя с id" + str(user_id))
+        return False
 
-def dict_factory(cursor, row):
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
-
+def getUserFilms(user_id):
+    return movies_dict.get(user_id)
+    
 def convertToFilm(movie):
-    return film.Film(movie[7],movie[0],movie[1],movie[2],movie[3],movie[4],movie[5],movie[6])
+    return film.Film(movie[9],movie[1],movie[2],movie[3],movie[4],movie[5],movie[6],movie[7], movie[8])
+
+def convertGenretoStr(genre_obj):
+    if genre_obj is None: return None
+    genres = ""
+    for g in genre_obj:
+       genres += g.genre + " "
+    return genres

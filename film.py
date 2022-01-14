@@ -1,12 +1,13 @@
 class Film:
     """description of class"""
 
-    def __init__(self, user_id, id, name, year, url, category, watched, desc):
+    def __init__(self, user_id,  name, year=None, kinopoisk_id=None, kinopoisk_url=None, genre=None,  category=None, watched=None, desc=None):
         self.user = user_id
-        self.id = id
+        self.kinopoisk_id = kinopoisk_id
         self.name = name
         self.year = year
-        self.url = url
+        self.kinopoisk_url = kinopoisk_url
+        self.genre = genre
         self.category = category
         self.watched = watched
         self.desc = desc

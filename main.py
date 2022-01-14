@@ -17,7 +17,6 @@ def Init():
     BDworker.Init()
     print(sys.version)
 
-
 Init()
 
 
@@ -48,7 +47,7 @@ def lalala(message):
            #case "test": bot.send_message(message.chat.id, "text")
            case '🎲 Рандомное число': bot.send_message(message.chat.id, str(random.randint(0, 100)))
            case '😊 Как дела?': func.howAreU(bot,message)
-           case '📄 Мой список': func.howAreU(bot,message)
+           case '📄 Мой список': func.writeFilmList(bot,message)
            case _ : func.search_f(bot,message)
             
 
@@ -56,13 +55,15 @@ def lalala(message):
 def callback_inline(call):
     try:
         if call.message:
-            if '&film_id=' in call.data:
-                if '&film_name=' in call.data:
+            if '&f_id=' in call.data:
+                if '&f_name=' in call.data:
                     BDworker.addMovieByTitle(call.message.chat.id, call.data.split("=")[2])
                     bot.send_message(call.message.chat.id, 'Фильм - ' + call.data.split("=")[2] + '.\n\rДобавлен в список без дополнительной информации')
                 else:
-                    BDworker.addMovie(call.data.split("=")[1])
-                    bot.send_message(call.message.chat.id, 'Фильм - ' + str(kinopoisk.getFullName(call.data.split("=")[1])) + 'Добавлен в ваш список :)')
+                    BDworker.addMovie(call.data.split("=")[1], call.message.chat.id)
+                    bot.send_message(call.message.chat.id, 'Фильм - ' + str(kinopoisk.getFullName(call.data.split("=")[1])) + ' Добавлен в ваш список :)')
+            elif '&p_id' in call.data:
+                pass
             else:
                 match call.data:
                     case 'good' | 'bad': callback.howAreU_back(bot,call)
