@@ -1,7 +1,7 @@
 import telebot
 import config
 import random
-import kinopoisk
+import kinopoiskNew
 import func
 import sys
 import callback
@@ -12,6 +12,13 @@ from telebot import types
 from keyboa import Keyboa
 
 bot = telebot.TeleBot(config.TOKEN)
+
+s = kinopoiskNew.search_film_by_name("Кингсман")
+s1 = kinopoiskNew.search_film_by_name("Kingsman")
+
+a = kinopoiskNew.get_film_by_id("507")
+a = kinopoiskNew.get_film_by_id("404900")
+print("s")
 
 def Init():
     BDworker.Init()
