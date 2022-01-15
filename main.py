@@ -55,15 +55,18 @@ def lalala(message):
 def callback_inline(call):
     try:
         if call.message:
-            if '&f_id=' in call.data:
+            if '&ff_id=' in call.data:      #Found film
                 if '&f_name=' in call.data:
                     BDworker.addMovieByTitle(call.message.chat.id, call.data.split("=")[2])
                     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Фильм - ' + call.data.split("=")[2] + '.\n\rДобавлен в список без дополнительной информации')
                 else:
                     BDworker.addMovie(call.data.split("=")[1], call.message.chat.id)
                     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Фильм - ' + str(Ikp.get_film_by_id(call.data.split("=")[1]).name) + ' Добавлен в ваш список :)')
-            elif '&p_id' in call.data:
-                pass
+            elif '&sf_id' in call.data: #Selected film
+                if '&page=' in call.data:
+                    func.writeFilmListPage(bot,call,int(call.data.split("=")[2]))
+                else:
+                    pass
             else:
                 match call.data:
                     case 'good' | 'bad': callback.howAreU_back(bot,call)
@@ -76,4 +79,8 @@ def callback_inline(call):
 
 
 # RUN
-bot.polling(none_stop=True, interval=0)
+while(True):
+    try:
+        bot.polling(none_stop=True, interval=0)
+    except:
+        pass

@@ -42,7 +42,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="func.py" />
-    <Compile Include="kinopoisk.py" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|PythonCore|3.10" />
