@@ -1,6 +1,7 @@
 import sqlite3
 import kinopoisk
 import film
+import Ikp
 
 users_dict = {}
 movies_dict_query = {}
@@ -39,9 +40,9 @@ def Init():
     movies_dict_query = cursor.fetchall()
     for movie in movies_dict_query:
         if movies_dict.get(movie[9]) is None:
-            movies_dict.update({movie[9]:[convertToFilm(movie)]})
+            movies_dict.update({movie[9]:[convertSQLToFilm(movie)]})
         else:
-            movies_dict[movie[9]] += [convertToFilm(movie)]
+            movies_dict[movie[9]] += [convertSQLToFilm(movie)]
 
 
 def addUser(message):
@@ -63,21 +64,22 @@ def addUser(message):
 def addMovie(film_id, user_id):
     cursor.execute(f"SELECT id FROM Movies Where USER_ID = {user_id} and Kinopoisk_id = {film_id}")
     data = cursor.fetchone()
+    Ikp_film_obj = Ikp.get_film_by_id(film_id)
+    film_name = Ikp_film_obj.ru_name + ' (' + Ikp_film_obj.name + ')'
     if data is None:
             #info
-            film_name = kinopoisk.getFullName(film_id)
-            film_year = kinopoisk.getYear(film_id)
-            film_url = kinopoisk.getUrl(film_id)
-            film_genre = convertGenretoStr(kinopoisk.getGenres(film_id))
-            film_category = kinopoisk.getCategory(film_id) 
+            film_year = Ikp_film_obj.year
+            film_url = Ikp_film_obj.kp_url
+            film_genre = str(Ikp_film_obj.genres)
+            film_category = Ikp_film_obj.category
             film_watched = 0        #По умолчанию не просмотрен
-            film_desc = kinopoisk.getDescription(film_id)
+            film_desc = Ikp_film_obj.description
             #BD
             film_list = [film_name,film_year,film_id,film_url, film_genre, film_category, film_watched, film_desc, user_id]
             cursor.execute("INSERT INTO Movies( Name,Year,Kinopoisk_id,Kinopoisk_url,Genre,Category,Watched,Description,USER_ID) VALUES(?,?,?,?,?,?,?,?,?);",film_list)
             connect.commit()
             #dict
-            f_obj = film.Film(user_id,film_name,film_year,film_id,film_url, film_genre, film_category, film_watched, film_desc)
+            f_obj = converIkpToFilm(Ikp_film_obj,user_id)
             if movies_dict.get(user_id) is None:
                 movies_dict.update({user_id:[f_obj]})
             else:
@@ -111,12 +113,9 @@ def addMovieByTitle(user_id, film_name):
 def getUserFilms(user_id):
     return movies_dict.get(user_id)
     
-def convertToFilm(movie):
+def convertSQLToFilm(movie):
     return film.Film(movie[9],movie[1],movie[2],movie[3],movie[4],movie[5],movie[6],movie[7], movie[8])
 
-def convertGenretoStr(genre_obj):
-    if genre_obj is None: return None
-    genres = ""
-    for g in genre_obj:
-       genres += g.genre + " "
-    return genres
+def converIkpToFilm(Ikp_film, user_id):
+    return film.Film(user_id,Ikp_film.ru_name + ' (' + Ikp_film.name + ')', Ikp_film.year, Ikp_film.kp_id, Ikp_film.kp_url, Ikp_film.genres,
+                    Ikp_film.category, 0, Ikp_film.description)

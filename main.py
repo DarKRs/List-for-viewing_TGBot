@@ -1,7 +1,7 @@
 import telebot
 import config
 import random
-import kinopoiskNew
+import Ikp
 import func
 import sys
 import callback
@@ -12,13 +12,6 @@ from telebot import types
 from keyboa import Keyboa
 
 bot = telebot.TeleBot(config.TOKEN)
-
-s = kinopoiskNew.search_film_by_name("Кингсман")
-s1 = kinopoiskNew.search_film_by_name("Kingsman")
-
-a = kinopoiskNew.get_film_by_id("507")
-a = kinopoiskNew.get_film_by_id("404900")
-print("s")
 
 def Init():
     BDworker.Init()
@@ -65,10 +58,10 @@ def callback_inline(call):
             if '&f_id=' in call.data:
                 if '&f_name=' in call.data:
                     BDworker.addMovieByTitle(call.message.chat.id, call.data.split("=")[2])
-                    bot.send_message(call.message.chat.id, 'Фильм - ' + call.data.split("=")[2] + '.\n\rДобавлен в список без дополнительной информации')
+                    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Фильм - ' + call.data.split("=")[2] + '.\n\rДобавлен в список без дополнительной информации')
                 else:
                     BDworker.addMovie(call.data.split("=")[1], call.message.chat.id)
-                    bot.send_message(call.message.chat.id, 'Фильм - ' + str(kinopoisk.getFullName(call.data.split("=")[1])) + ' Добавлен в ваш список :)')
+                    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Фильм - ' + str(Ikp.get_film_by_id(call.data.split("=")[1]).name) + ' Добавлен в ваш список :)')
             elif '&p_id' in call.data:
                 pass
             else:

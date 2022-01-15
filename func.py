@@ -1,4 +1,4 @@
-import kinopoisk
+import Ikp
 import telebot
 import callback
 import BDworker
@@ -7,7 +7,7 @@ from telebot import types
 from keyboa import Keyboa
 
 def search_f(bot,message):
-    film_obj_list = kinopoisk.search_film_api(message.text)
+    film_obj_list = Ikp.search_film_by_name(message.text)
     if len(film_obj_list) > 0:
         films = makeFilmList(film_obj_list, message.text)
         text = makeFilmText(film_obj_list, message.text)
@@ -21,7 +21,7 @@ def search_f(bot,message):
          BDworker.addMovieByTitle(message.chat.id, message.text)
 
 
-def writeFilmList(bot,message):
+def writeFilmList(bot,message,page=1):
     films = BDworker.getUserFilms(message.chat.id)
     if len(films) > 0:
         text = makeFilmListText(films)
@@ -52,19 +52,19 @@ def takeName(film_name, user_film_name):
         return film_name
 
 def makeTextFound(film, user_film_name):
-    if film.name_ru is None and film.name_original:
+    if film.ru_name is None and film.name is None:
         return user_film_name + " ( \"Оригинальное название не найдено\" )"
-    elif film.name_ru is None:
-        return user_film_name + " (" + film.name_original + ")"
-    elif film.name_original is None:
-        return film.name_ru + " ( \"Оригинальное название не найдено\" )"
+    elif film.ru_name is None:
+        return user_film_name + " (" + film.name + ")"
+    elif film.name is None:
+        return film.ru_name + " ( \"Оригинальное название не найдено\" )"
     else:
-        return film.name_ru + " (" + film.name_original + ")"
+        return film.ru_name + " (" + film.name + ")"
 
 def makeFilmList(film_obj_list, user_film_name):
     films_list = []
     for i,film in enumerate(film_obj_list,1):
-        films_list.append({str(i)+". " + takeName(film.name_ru,user_film_name): str(film.kinopoisk_id)})
+        films_list.append({str(i)+". " + takeName(film.ru_name,user_film_name): str(film.kp_id)})
         if i == 3 : break
     films_list.append({"Добавить как есть": "&f_name=" + user_film_name})
     return films_list
@@ -88,7 +88,7 @@ def makeFilmListText(films):
             break 
     return films_list_text
         
-def makeFilmListKeyboa(films):
+def makeFilmListKeyboa(films,page=1):
     film_list_kb=[]
     for i,film in enumerate(films,1):
         id = film.kinopoisk_id
@@ -96,7 +96,9 @@ def makeFilmListKeyboa(films):
             id = 0
         film_list_kb.append({str(i):id})
         if i == 12: break
-    film_list_kb.append({"⏪":"prev_page"})
-    film_list_kb.append({"⏩":"next_page"})
+    if page == 1:
+        film_list_kb.append({"⏩":"next_page"})
+    else:
+        film_list_kb.append({"⏪":"&page"})
     return film_list_kb
     

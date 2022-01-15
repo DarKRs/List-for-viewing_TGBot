@@ -1,3 +1,5 @@
+#No longer in use
+
 import config
 import sys
 from kinopoisk_unofficial.kinopoisk_api_client import KinopoiskApiClient

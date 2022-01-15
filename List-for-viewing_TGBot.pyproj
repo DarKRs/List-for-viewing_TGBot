@@ -36,7 +36,7 @@
     <Compile Include="KinoPoiskAPI\examples\search.py" />
     <Compile Include="KinoPoiskAPI\examples\top500.py" />
     <Compile Include="KinoPoiskAPI\kinopoisk_api.py" />
-    <Compile Include="kinopoiskNew.py" />
+    <Compile Include="Ikp.py" />
     <Compile Include="main.py" />
     <Compile Include="callback.py">
       <SubType>Code</SubType>

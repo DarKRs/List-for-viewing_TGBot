@@ -15,8 +15,8 @@ def howAreU_back(bot,call):
                                   reply_markup=None)
 
     # show alert
-    bot.answer_callback_query(callback_query_id=call.id, show_alert=False,
-                                      text="ЭТО ТЕСТОВОЕ УВЕДОМЛЕНИЕ!!11")
+    #bot.answer_callback_query(callback_query_id=call.id, show_alert=False,
+    #                                 text="ЭТО ТЕСТОВОЕ УВЕДОМЛЕНИЕ!!11")
 
 def newFilm_back(bot,id):
     pass
