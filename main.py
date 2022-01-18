@@ -29,7 +29,6 @@ def welcome(message):
     # keyboard
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton("🎲 Рандомное число")
-    item2 = types.KeyboardButton("😊 Как дела?")
     item3 = types.KeyboardButton("📄 Мой список")
 
     markup.add(item1, item2, item3)
@@ -46,7 +45,6 @@ def lalala(message):
        match message.text:
            #case "test": bot.send_message(message.chat.id, "text")
            case '🎲 Рандомное число': bot.send_message(message.chat.id, str(random.randint(0, 100)))
-           case '😊 Как дела?': func.howAreU(bot,message)
            case '📄 Мой список': func.writeFilmList(bot,message)
            case _ : func.search_f(bot,message)
             
@@ -57,8 +55,9 @@ def callback_inline(call):
         if call.message:
             if '&ff_id=' in call.data:      #Found film
                 if '&f_name=' in call.data:
-                    BDworker.addMovieByTitle(call.message.chat.id, call.data.split("=")[2])
-                    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Фильм - ' + call.data.split("=")[2] + '.\n\rДобавлен в список без дополнительной информации')
+                    film_name = findFilmInMessage(call.message, call.data.split("=")[2])
+                    BDworker.addMovieByTitle(call.message.chat.id, film_name)
+                    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Фильм - ' + film_name + '.\n\rДобавлен в список без дополнительной информации')
                 else:
                     BDworker.addMovie(call.data.split("=")[1], call.message.chat.id)
                     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Фильм - ' + str(Ikp.get_film_by_id(call.data.split("=")[1]).name) + ' Добавлен в ваш список :)')
@@ -66,16 +65,27 @@ def callback_inline(call):
                 if '&page=' in call.data:
                     func.writeFilmListPage(bot,call,int(call.data.split("=")[2]))
                 else:
-                    pass
+                    func.writeFilmInfo(bot,call.message,call.data.split("=")[1])
+            elif '&ef_id=' in call.data:
+                match call.data.split("=")[1]:
+                    case 'name': callback.editFilmName(bot,call.message,call.data.split("=")[2])
+                    case 'url': callback.editFilmUrl(bot,call.message,call.data.split("=")[2])
+                    case 'year': callback.editFilmYear(bot,call.message,call.data.split("=")[2])
+                    case 'genre': callback.editFilmGenre(bot,call.message,call.data.split("=")[2])
+                    case 'category': callback.editFilmCategory(bot,call.message,call.data.split("=")[2])
+                    case 'desc': callback.editFilmDesc(bot,call.message,call.data.split("=")[2])
+                    case 'watched': callback.editFilmWatch(bot,call.message,call.data.split("=")[2],1)
+                    case 'nonwatched': callback.editFilmWatch(bot,call.message,call.data.split("=")[2],1)
             else:
                 match call.data:
-                    case 'good' | 'bad': callback.howAreU_back(bot,call)
                     case _ : bot.send_message(call.message.chat.id, 'Я не знаю что ответить')
     except Exception as e:
         print(repr(e))
 
 
-
+def findFilmInMessage(message, data):
+    text = message.text[message.text.index(data):message.text.rindex('"')]
+    return text
 
 
 # RUN

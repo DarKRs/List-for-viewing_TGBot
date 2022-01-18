@@ -2,6 +2,7 @@ import sqlite3
 import kinopoisk
 import film
 import Ikp
+import func
 
 users_dict = {}
 movies_dict_query = {}
@@ -87,7 +88,7 @@ def addMovie(film_id, user_id):
             return True
     else:
         print("Debug: Фильм - " + str(film_name) + " уже есть в списке пользователя с id" + str(user_id))
-        return false
+        return False
 
     #search
 
@@ -96,8 +97,8 @@ def addMovieByTitle(user_id, film_name):
     data = cursor.fetchone()
     if data is None:
             #BD
-            film_list = [user_id, film_name]
-            cursor.execute("INSERT INTO Movies(USER_ID,Name) VALUES(?,?);",film_list)
+            film_list = [user_id, film_name, 0]
+            cursor.execute("INSERT INTO Movies(USER_ID,Name,Watched) VALUES(?,?,?);",film_list)
             connect.commit()
             #Dict
             f_obj = film.Film(user_id=user_id,name=film_name )
@@ -114,8 +115,65 @@ def getUserFilms(user_id):
     return movies_dict.get(user_id)
     
 def convertSQLToFilm(movie):
-    return film.Film(movie[9],movie[1],movie[2],movie[3],movie[4],movie[5],movie[6],movie[7], movie[8])
+    return film.Film(movie[9],movie[1],movie[0],movie[2],movie[3],movie[4],movie[5],movie[6],movie[7], movie[8])
 
 def converIkpToFilm(Ikp_film, user_id):
     return film.Film(user_id,Ikp_film.ru_name + ' (' + Ikp_film.name + ')', Ikp_film.year, Ikp_film.kp_id, Ikp_film.kp_url, Ikp_film.genres,
                     Ikp_film.category, 0, Ikp_film.description)
+
+#Edit film
+
+def editName(message,idx,bot):
+    f_id = getUserFilms(message.chat.id)[int(idx)].sqlId
+    cursor.execute(f"UPDATE Movies SET Name = '{message.text}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
+    connect.commit()
+    movies_dict[message.chat.id][int(idx)].name = message.text
+    bot.send_message(message.chat.id,'Название фильма изменено на ' + message.text)
+    func.writeFilmInfo(bot,message,idx)
+    
+def editUrl(message,idx,bot):
+    f_id = getUserFilms(message.chat.id)[int(idx)].sqlId
+    cursor.execute(f"UPDATE Movies SET Kinopoisk_url = '{message.text}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
+    connect.commit()
+    movies_dict[message.chat.id][int(idx)].kinopoisk_url = message.text
+    bot.send_message(message.chat.id,'Ссылка на фильм изменена на ' + message.text)
+    func.writeFilmInfo(bot,message,idx)
+    
+def editYear(message,idx,bot):
+    f_id = getUserFilms(message.chat.id)[int(idx)].sqlId
+    cursor.execute(f"UPDATE Movies SET Year = '{message.text}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
+    connect.commit()
+    movies_dict[message.chat.id][int(idx)].year = message.text
+    bot.send_message(message.chat.id,'Год фильма изменен на ' + message.text)
+    func.writeFilmInfo(bot,message,idx)
+
+def editGenre(message,idx,bot):
+    f_id = getUserFilms(message.chat.id)[int(idx)].sqlId
+    cursor.execute(f"UPDATE Movies SET Genre = '{message.text}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
+    connect.commit()
+    movies_dict[message.chat.id][int(idx)].genre = message.text
+    bot.send_message(message.chat.id,'Жанры фильма изменены на ' + message.text)
+    func.writeFilmInfo(bot,message,idx)
+
+def editCategory(message,idx,bot):
+    f_id = getUserFilms(message.chat.id)[int(idx)].sqlId
+    cursor.execute(f"UPDATE Movies SET Category = '{message.text}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
+    connect.commit()
+    movies_dict[message.chat.id][int(idx)].category = message.text
+    bot.send_message(message.chat.id,'Категория изменена на ' + message.text)
+    func.writeFilmInfo(bot,message,idx)
+
+def editDesc(message,idx,bot):
+    f_id = getUserFilms(message.chat.id)[int(idx)].sqlId
+    cursor.execute(f"UPDATE Movies SET Description = '{message.text}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
+    connect.commit()
+    movies_dict[message.chat.id][int(idx)].desc = message.text
+    bot.send_message(message.chat.id,'Описание изменено ' + message.text)
+    func.writeFilmInfo(bot,message,idx)
+
+def editWatch(message,idx,bot,watched):
+    f_id = getUserFilms(message.chat.id)[int(idx)].sqlId
+    cursor.execute(f"UPDATE Movies SET Watched = '{watched}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
+    connect.commit()
+    movies_dict[message.chat.id][int(idx)].watched = watched
+    func.writeFilmInfo(bot,message,idx)

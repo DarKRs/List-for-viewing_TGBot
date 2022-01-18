@@ -24,7 +24,7 @@ def search_f(bot,message):
 
 def writeFilmList(bot,message):
     films = BDworker.getUserFilms(message.chat.id)
-    if len(films) > 0:
+    if films != None:
         text = makeFilmListText(films,1)
         films_items = makeFilmListKeyboa(films,1)
         if len(films) % 12 == 0:
@@ -45,7 +45,7 @@ def writeFilmList(bot,message):
 def writeFilmListPage(bot,call,idx):
     message = call.message
     films = BDworker.getUserFilms(message.chat.id)
-    if len(films) > 0:
+    if films != None:
         if idx < 1 or idx > len(films):
             bot.answer_callback_query(callback_query_id=call.id, show_alert=False, text=getRndEndMessage())
             return
@@ -71,11 +71,24 @@ def writeFilmListPage(bot,call,idx):
         bot.send_message(message.chat.id, "В вашем списке нет фильмов!\n\rНапишите мне название фильма, и я добавлю его в список!")
 
 def writeFilmInfo(bot,message,idx):
-    film = BDworker.getUserFilms(message.chat.id)[idx]
+    film = BDworker.getUserFilms(message.chat.id)[int(idx)]
     text = makeMovieText(film)
     edit_film_items = [
-        {"Изменить название":1},
+        {"Изм. название":"name=" + str(idx)},{"Изм. ссылку":"url="+ str(idx)},{"Изм. год":"year="+str(idx)},
+        {"Изм. жанры":"genre="+str(idx)},{"Изм. категорию":"category="+str(idx)},{"Изм. описание":"desc="+str(idx)},
         ]
+    edit_film_items_watch = []
+    if film.watched == 0:
+        edit_film_items_watch.append({"Просмотрено":"watched="+str(idx)})
+    else:
+        edit_film_items_watch.append({"Не просмотренно":"nonwatched="+str(idx)})
+
+    kb_edit = Keyboa(items=edit_film_items, items_in_row=3, copy_text_to_callback=True,front_marker="&ef_id=").keyboard #Edit film
+    kb_watch = Keyboa(items=edit_film_items_watch, items_in_row=1, copy_text_to_callback=True,front_marker="&ef_id=").keyboard
+
+    keyboard = Keyboa.combine(keyboards=(kb_edit, kb_watch))
+
+    bot.send_message(message.chat.id, text, reply_markup=keyboard)
 
 
 def howAreU(bot,message):
@@ -110,15 +123,15 @@ def makeFilmList(film_obj_list, user_film_name):
     for i,film in enumerate(film_obj_list,1):
         films_list.append({str(i)+". " + takeName(film.ru_name,user_film_name): str(film.kp_id)})
         if i == 3 : break
-    films_list.append({"Добавить как есть": "&f_name=" + user_film_name})
+    films_list.append({"Добавить как есть": "&f_name=" + user_film_name[:20]})
     return films_list
 
 def makeFilmText(film_obj_list, user_film_name):
-    films_text = 'Вот что мне удалось найти: \n\r'
+    films_text = 'Вот что мне удалось найти по запросу "' + user_film_name + '": \n\r'
     for i,film in enumerate(film_obj_list,1):
-        films_text += str(i) + '. ' + str(makeTextFound(film,user_film_name)) + '\n\r'
+        films_text += str(i) + '. ' + str(makeTextFound(film,user_film_name)) + ' ' + film.year + ' ' + film.category + '\n\r'
         if i == 3 : break
-    films_text += 'Выберите фильм, или нажмите "Добавить как есть"'
+    films_text += "Выберите фильм, или нажмите 'Добавить как есть'"
     return films_text
 
 #Formating text (WriteFilmList)
@@ -161,10 +174,23 @@ def getRndPushMessage():
 #Formating Text (Selected Film)
 
 def makeMovieText(film):
-    text = film.ru_name
+    text = film.name
+    if film.kinopoisk_url is None:
+        text += " ( Ссылка не указана ) "
+    else:
+        text += " ( " + film.kinopoisk_url + " ) "
     if film.watched == 1:
         text += "\n\rПросмотрено"
-    text += "\n\n\r Год:" + film.year
-    text += "\n\n\r Жанры:" + film.genre
-    text += "\n\n\r" + film.desc
+    if film.year is None:
+        text += "\n\n\r Год не указан"
+    else:
+        text += "\n\n\r Год:" + film.year
+    if film.genre is None:
+        text += "\n\n\r Жанры не указаны"
+    else:
+        text += "\n\n\r Жанры:" + film.genre
+    if film.desc is None:
+        text += "\n\n\r Описание не указано"
+    else:
+        text += "\n\n\r" + film.desc
     return text
