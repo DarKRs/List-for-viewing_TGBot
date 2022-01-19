@@ -131,6 +131,7 @@ def getNewSqlId():
 
 def editName(message,idx,bot):
     if message.text == '❌ Отмена':
+        bot.send_message(message.chat.id,'Изменение названия отменено',reply_markup=func.getStandKeyboa())
         func.writeFilmInfo(bot,message,idx)
         return
     else:
@@ -138,49 +139,74 @@ def editName(message,idx,bot):
         cursor.execute(f"UPDATE Movies SET Name = '{message.text}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
         connect.commit()
         movies_dict[message.chat.id][int(idx)].name = message.text
-        bot.send_message(message.chat.id,'Название фильма изменено на ' + message.text)
+        bot.send_message(message.chat.id,'Название фильма изменено на ' + message.text,reply_markup=func.getStandKeyboa())
         func.writeFilmInfo(bot,message,idx)
 
     
 def editUrl(message,idx,bot):
-    f_id = getUserFilms(message.chat.id)[int(idx)].sqlId
-    cursor.execute(f"UPDATE Movies SET Kinopoisk_url = '{message.text}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
-    connect.commit()
-    movies_dict[message.chat.id][int(idx)].kinopoisk_url = message.text
-    bot.send_message(message.chat.id,'Ссылка на фильм изменена на ' + message.text)
-    func.writeFilmInfo(bot,message,idx)
+    if message.text == '❌ Отмена':
+        bot.send_message(message.chat.id,'Изменение ссылки отменено',reply_markup=func.getStandKeyboa())
+        func.writeFilmInfo(bot,message,idx)
+        return
+    else:
+        f_id = getUserFilms(message.chat.id)[int(idx)].sqlId
+        cursor.execute(f"UPDATE Movies SET Kinopoisk_url = '{message.text}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
+        connect.commit()
+        movies_dict[message.chat.id][int(idx)].kinopoisk_url = message.text
+        bot.send_message(message.chat.id,'Ссылка на фильм изменена на ' + message.text,reply_markup=func.getStandKeyboa())
+        func.writeFilmInfo(bot,message,idx)
     
 def editYear(message,idx,bot):
-    f_id = getUserFilms(message.chat.id)[int(idx)].sqlId
-    cursor.execute(f"UPDATE Movies SET Year = '{message.text}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
-    connect.commit()
-    movies_dict[message.chat.id][int(idx)].year = message.text
-    bot.send_message(message.chat.id,'Год фильма изменен на ' + message.text)
-    func.writeFilmInfo(bot,message,idx)
+    if message.text == '❌ Отмена':
+        bot.send_message(message.chat.id,'Изменение года отменено',reply_markup=func.getStandKeyboa())
+        func.writeFilmInfo(bot,message,idx)
+        return
+    else:
+        f_id = getUserFilms(message.chat.id)[int(idx)].sqlId
+        cursor.execute(f"UPDATE Movies SET Year = '{message.text}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
+        connect.commit()
+        movies_dict[message.chat.id][int(idx)].year = message.text
+        bot.send_message(message.chat.id,'Год фильма изменен на ' + message.text,reply_markup=func.getStandKeyboa())
+        func.writeFilmInfo(bot,message,idx)
 
 def editGenre(message,idx,bot):
-    f_id = getUserFilms(message.chat.id)[int(idx)].sqlId
-    cursor.execute(f"UPDATE Movies SET Genre = '{message.text}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
-    connect.commit()
-    movies_dict[message.chat.id][int(idx)].genre = message.text
-    bot.send_message(message.chat.id,'Жанры фильма изменены на ' + message.text)
-    func.writeFilmInfo(bot,message,idx)
+    if message.text == '❌ Отмена':
+        bot.send_message(message.chat.id,'Изменение жанров отменено',reply_markup=func.getStandKeyboa())
+        func.writeFilmInfo(bot,message,idx)
+        return
+    else:
+        f_id = getUserFilms(message.chat.id)[int(idx)].sqlId
+        cursor.execute(f"UPDATE Movies SET Genre = '{message.text}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
+        connect.commit()
+        movies_dict[message.chat.id][int(idx)].genre = message.text
+        bot.send_message(message.chat.id,'Жанры фильма изменены на ' + message.text,reply_markup=func.getStandKeyboa())
+        func.writeFilmInfo(bot,message,idx)
 
 def editCategory(message,idx,bot):
-    f_id = getUserFilms(message.chat.id)[int(idx)].sqlId
-    cursor.execute(f"UPDATE Movies SET Category = '{message.text}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
-    connect.commit()
-    movies_dict[message.chat.id][int(idx)].category = message.text
-    bot.send_message(message.chat.id,'Категория изменена на ' + message.text)
-    func.writeFilmInfo(bot,message,idx)
+    if message.text == '❌ Отмена':
+        bot.send_message(message.chat.id,'Изменение категории отменено',reply_markup=func.getStandKeyboa())
+        func.writeFilmInfo(bot,message,idx)
+        return
+    else:
+        f_id = getUserFilms(message.chat.id)[int(idx)].sqlId
+        cursor.execute(f"UPDATE Movies SET Category = '{message.text}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
+        connect.commit()
+        movies_dict[message.chat.id][int(idx)].category = message.text
+        bot.send_message(message.chat.id,'Категория изменена на ' + message.text,reply_markup=func.getStandKeyboa())
+        func.writeFilmInfo(bot,message,idx)
 
 def editDesc(message,idx,bot):
-    f_id = getUserFilms(message.chat.id)[int(idx)].sqlId
-    cursor.execute(f"UPDATE Movies SET Description = '{message.text}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
-    connect.commit()
-    movies_dict[message.chat.id][int(idx)].desc = message.text
-    bot.send_message(message.chat.id,'Описание изменено ' + message.text)
-    func.writeFilmInfo(bot,message,idx)
+    if message.text == '❌ Отмена':
+        bot.send_message(message.chat.id,'Изменение описания отменено',reply_markup=func.getStandKeyboa())
+        func.writeFilmInfo(bot,message,idx)
+        return
+    else:
+        f_id = getUserFilms(message.chat.id)[int(idx)].sqlId
+        cursor.execute(f"UPDATE Movies SET Description = '{message.text}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
+        connect.commit()
+        movies_dict[message.chat.id][int(idx)].desc = message.text
+        bot.send_message(message.chat.id,'Описание изменено на ' + message.text, reply_markup=func.getStandKeyboa())
+        func.writeFilmInfo(bot,message,idx)
 
 def editWatch(message,idx,bot,watched):
     f_id = getUserFilms(message.chat.id)[int(idx)].sqlId
@@ -190,11 +216,13 @@ def editWatch(message,idx,bot,watched):
     func.editFilmInfo(bot,message,idx)
 
 def deleteFilm(message,idx,bot):
-    if(message.text == "Да"):
+    if(message.text == "✔️ Да"):
         f_id = getUserFilms(message.chat.id)[int(idx)].sqlId
         cursor.execute(f"DELETE FROM Movies WHERE USER_ID = {message.chat.id} and id = {f_id}")
         connect.commit()
+        bot.send_message(message.chat.id,'Фильм '+ movies_dict[message.chat.id][int(idx)].name + ' удален из списка',reply_markup=func.getStandKeyboa())
         movies_dict[message.chat.id].pop(int(idx))
         func.writeFilmList(bot,message)
     else:
+        bot.send_message(message.chat.id,'Удаление отменено',reply_markup=func.getStandKeyboa())
         return

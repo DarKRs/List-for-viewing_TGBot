@@ -7,6 +7,14 @@ import random
 from telebot import types
 from keyboa import Keyboa
 
+def getStandKeyboa():
+    # keyboard
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    item1 = types.KeyboardButton("🎲 Рандомное число")
+    item3 = types.KeyboardButton("📄 Мой список")
+    markup.add(item1, item3)
+    return markup
+
 def search_f(bot,message):
     film_obj_list = Ikp.search_film_by_name(message.text)
     if len(film_obj_list) > 0:

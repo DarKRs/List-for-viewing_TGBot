@@ -26,17 +26,10 @@ def welcome(message):
     sti = open('static/bersHi.webp', 'rb')
     bot.send_sticker(message.chat.id, sti)
 
-    # keyboard
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    item1 = types.KeyboardButton("🎲 Рандомное число")
-    item3 = types.KeyboardButton("📄 Мой список")
-
-    markup.add(item1, item3)
-
     bot.send_message(message.chat.id,
                      "Добро пожаловать, {0.first_name}!\nЯ - , бот созданный чтобы запоминать фильмы, мультфильмы, сериалы и т.д. необходымые к просмотру. \nЧто то вроде блокнотика с фильмами ;).".format(
                          message.from_user),
-                     parse_mode='html', reply_markup=markup)
+                     parse_mode='html', reply_markup=func.getStandKeyboa())
 
 
 @bot.message_handler(content_types=['text'])
@@ -60,12 +53,12 @@ def callback_inline(call):
                 else:
                     BDworker.addMovie(call.data.split("=")[1], call.message.chat.id)
                     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Фильм - ' + str(Ikp.get_film_by_id(call.data.split("=")[1]).name) + ' Добавлен в ваш список :)')
-            elif '&sf_id' in call.data: #Selected film
+            elif '&sf_id' in call.data:     #Selected film
                 if '&page=' in call.data:
                     func.writeFilmListPage(bot,call,int(call.data.split("=")[2]))
                 else:
                     func.writeFilmInfo(bot,call.message,call.data.split("=")[1])
-            elif '&ef_id=' in call.data:
+            elif '&ef_id=' in call.data:    #Edit film
                 match call.data.split("=")[1]:
                     case 'name': callback.editFilmName(bot,call.message,call.data.split("=")[2])
                     case 'url': callback.editFilmUrl(bot,call.message,call.data.split("=")[2])

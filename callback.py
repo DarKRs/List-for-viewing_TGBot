@@ -16,35 +16,45 @@ def howAreU_back(bot,call):
 
 
 def editFilmName(bot,message,idx):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    item1 = types.KeyboardButton("❌ Отмена")
-    markup.add(item1)
-    msg = bot.send_message(message.chat.id,'Пожалуйста, введите новое название',reply_markup=markup)
+    msg = bot.send_message(message.chat.id,'Пожалуйста, введите новое название',reply_markup=cancelKeyboa())
     bot.register_next_step_handler(msg,BDworker.editName,idx,bot)
 
 def editFilmUrl(bot,message,idx):
-    msg = bot.send_message(message.chat.id,'Пожалуйста, введите новую ссылку')
+    msg = bot.send_message(message.chat.id,'Пожалуйста, введите новую ссылку',reply_markup=cancelKeyboa())
     bot.register_next_step_handler(msg,BDworker.editUrl,idx,bot)
 
 def editFilmYear(bot,message,idx):
-    msg = bot.send_message(message.chat.id,'Пожалуйста, введите год')
+    msg = bot.send_message(message.chat.id,'Пожалуйста, введите год',reply_markup=cancelKeyboa())
     bot.register_next_step_handler(msg,BDworker.editYear,idx,bot)
 
 def editFilmGenre(bot,message,idx):
-    msg = bot.send_message(message.chat.id,'Пожалуйста, введите жанры через запятую')
+    msg = bot.send_message(message.chat.id,'Пожалуйста, введите жанры через запятую',reply_markup=cancelKeyboa())
     bot.register_next_step_handler(msg,BDworker.editGenre,idx,bot)
 
 def editFilmCategory(bot,message,idx):
-    msg = bot.send_message(message.chat.id,'Пожалуйста, введите категорию \n Стандартные категории: Фильм, Мультфильм, Аниме фильм, Сериал, Мультсериал, Аниме сериал')
+    msg = bot.send_message(message.chat.id,'Пожалуйста, введите категорию \n Стандартные категории: Фильм, Мультфильм, Аниме фильм, Сериал, Мультсериал, Аниме сериал',reply_markup=cancelKeyboa())
     bot.register_next_step_handler(msg,BDworker.editCategory,idx,bot)
 
 def editFilmDesc(bot,message,idx):
-    msg = bot.send_message(message.chat.id,'Пожалуйста, введите новое описание')
+    msg = bot.send_message(message.chat.id,'Пожалуйста, введите новое описание',reply_markup=cancelKeyboa())
     bot.register_next_step_handler(msg,BDworker.editDesc,idx,bot)
 
 def editFilmWatch(bot,message,idx,watched):
     BDworker.editWatch(message,idx,bot,watched)
 
 def deleteFilm(bot,message,idx):
-    msg = bot.send_message(message.chat.id,'Вы уверенны что хотите удалить фильм из списка?\nНапишите "Да" если уверены')
+    msg = bot.send_message(message.chat.id,'Вы уверенны что хотите удалить фильм из списка?',reply_markup=delKeyboa())
     bot.register_next_step_handler(msg,BDworker.deleteFilm,idx,bot)
+
+def cancelKeyboa():
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    cancel = types.KeyboardButton("❌ Отмена")
+    keyboard.add(cancel)
+    return keyboard
+
+def delKeyboa():
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    yeap = types.KeyboardButton("✔️ Да")
+    cancel = types.KeyboardButton("❌ Нет")
+    keyboard.add(yeap,cancel)
+    return keyboard
