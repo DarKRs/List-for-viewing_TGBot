@@ -31,7 +31,7 @@ def welcome(message):
     item1 = types.KeyboardButton("🎲 Рандомное число")
     item3 = types.KeyboardButton("📄 Мой список")
 
-    markup.add(item1, item2, item3)
+    markup.add(item1, item3)
 
     bot.send_message(message.chat.id,
                      "Добро пожаловать, {0.first_name}!\nЯ - , бот созданный чтобы запоминать фильмы, мультфильмы, сериалы и т.д. необходымые к просмотру. \nЧто то вроде блокнотика с фильмами ;).".format(
@@ -75,7 +75,7 @@ def callback_inline(call):
                     case 'category': callback.editFilmCategory(bot,call.message,call.data.split("=")[2])
                     case 'desc': callback.editFilmDesc(bot,call.message,call.data.split("=")[2])
                     case 'watched': callback.editFilmWatch(bot,call.message,call.data.split("=")[2],1)
-                    case 'nonwatched': callback.editFilmWatch(bot,call.message,call.data.split("=")[2],1)
+                    case 'nonwatched': callback.editFilmWatch(bot,call.message,call.data.split("=")[2],0)
             else:
                 match call.data:
                     case _ : bot.send_message(call.message.chat.id, 'Я не знаю что ответить')
