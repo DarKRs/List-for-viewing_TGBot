@@ -88,29 +88,17 @@ def writeFilmInfo(bot,message,idx):
 
     keyboard = Keyboa.combine(keyboards=(kb_edit, kb_watch))
 
-    bot.send_message(message.chat.id, text, reply_markup=keyboard, parse_mode= "Markdown")
-
-def editFilmInfo(bot,message,idx):
-    film = BDworker.getUserFilms(message.chat.id)[int(idx)]
-    text = makeMovieText(film)
-    edit_film_items = [
-        {"Изм. название":"name=" + str(idx)},{"Изм. ссылку":"url="+ str(idx)},{"Изм. год":"year="+str(idx)},
-        {"Изм. жанры":"genre="+str(idx)},{"Изм. категорию":"category="+str(idx)},{"Изм. описание":"desc="+str(idx)},
-        ]
-    edit_film_items_watch = []
-    if film.watched == 0:
-        edit_film_items_watch.append({"Просмотрено":"watched="+str(idx)})
-    else:
-        edit_film_items_watch.append({"Не просмотренно":"nonwatched="+str(idx)})
-
-    kb_edit = Keyboa(items=edit_film_items, items_in_row=3, copy_text_to_callback=True,front_marker="&ef_id=").keyboard #Edit film
-    kb_watch = Keyboa(items=edit_film_items_watch, items_in_row=1, copy_text_to_callback=True,front_marker="&ef_id=").keyboard
-
-    keyboard = Keyboa.combine(keyboards=(kb_edit, kb_watch))
-
-    bot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text=text,reply_markup=keyboard, parse_mode= "Markdown")
+    bot.send_message(message.chat.id, text, reply_markup=keyboard)
 
 
+def howAreU(bot,message):
+    markup = types.InlineKeyboardMarkup(row_width=2)
+    item1 = types.InlineKeyboardButton("Хорошо", callback_data='good')
+    item2 = types.InlineKeyboardButton("Не очень", callback_data='bad')
+
+    markup.add(item1, item2)
+
+    bot.send_message(message.chat.id, 'Отлично, сам как?', reply_markup=markup)
 
 #Formating text (SearchFilm)
 
@@ -192,9 +180,7 @@ def makeMovieText(film):
     else:
         text += " ( " + film.kinopoisk_url + " ) "
     if film.watched == 1:
-        text += "\n\r*Просмотрено*"
-    else:
-        text += "\n"
+        text += "\n\rПросмотрено"
     if film.year is None:
         text += "\n\n\r Год не указан"
     else:
@@ -202,7 +188,7 @@ def makeMovieText(film):
     if film.genre is None:
         text += "\n\n\r Жанры не указаны"
     else:
-        text += "\n\n\r Жанры:" + str(film.genre)
+        text += "\n\n\r Жанры:" + film.genre
     if film.desc is None:
         text += "\n\n\r Описание не указано"
     else:
