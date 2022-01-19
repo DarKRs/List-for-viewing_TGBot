@@ -43,7 +43,6 @@ def welcome(message):
 def lalala(message):
     if message.chat.type == 'private':
        match message.text:
-           #case "test": bot.send_message(message.chat.id, "text")
            case '🎲 Рандомное число': bot.send_message(message.chat.id, str(random.randint(0, 100)))
            case '📄 Мой список': func.writeFilmList(bot,message)
            case _ : func.search_f(bot,message)
@@ -76,6 +75,7 @@ def callback_inline(call):
                     case 'desc': callback.editFilmDesc(bot,call.message,call.data.split("=")[2])
                     case 'watched': callback.editFilmWatch(bot,call.message,call.data.split("=")[2],1)
                     case 'nonwatched': callback.editFilmWatch(bot,call.message,call.data.split("=")[2],0)
+                    case 'delete': callback.deleteFilm(bot,call.message,call.data.split("=")[2])
             else:
                 match call.data:
                     case _ : bot.send_message(call.message.chat.id, 'Я не знаю что ответить')

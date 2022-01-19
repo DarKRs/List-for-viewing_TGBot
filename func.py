@@ -82,9 +82,10 @@ def writeFilmInfo(bot,message,idx):
         edit_film_items_watch.append({"Просмотрено":"watched="+str(idx)})
     else:
         edit_film_items_watch.append({"Не просмотренно":"nonwatched="+str(idx)})
+    edit_film_items_watch.append({"Удалить фильм":"delete="+str(idx)})
 
     kb_edit = Keyboa(items=edit_film_items, items_in_row=3, copy_text_to_callback=True,front_marker="&ef_id=").keyboard #Edit film
-    kb_watch = Keyboa(items=edit_film_items_watch, items_in_row=1, copy_text_to_callback=True,front_marker="&ef_id=").keyboard
+    kb_watch = Keyboa(items=edit_film_items_watch, items_in_row=2, copy_text_to_callback=True,front_marker="&ef_id=").keyboard
 
     keyboard = Keyboa.combine(keyboards=(kb_edit, kb_watch))
 
@@ -102,9 +103,10 @@ def editFilmInfo(bot,message,idx):
         edit_film_items_watch.append({"Просмотрено":"watched="+str(idx)})
     else:
         edit_film_items_watch.append({"Не просмотренно":"nonwatched="+str(idx)})
+    edit_film_items_watch.append({"Удалить фильм":"delete="+str(idx)})
 
     kb_edit = Keyboa(items=edit_film_items, items_in_row=3, copy_text_to_callback=True,front_marker="&ef_id=").keyboard #Edit film
-    kb_watch = Keyboa(items=edit_film_items_watch, items_in_row=1, copy_text_to_callback=True,front_marker="&ef_id=").keyboard
+    kb_watch = Keyboa(items=edit_film_items_watch, items_in_row=2, copy_text_to_callback=True,front_marker="&ef_id=").keyboard
 
     keyboard = Keyboa.combine(keyboards=(kb_edit, kb_watch))
 
