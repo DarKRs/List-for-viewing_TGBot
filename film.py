@@ -1,7 +1,7 @@
 class Film:
     """description of class"""
 
-    def __init__(self, user_id, name, sqlId=None,  year=None, kinopoisk_id=None, kinopoisk_url=None, genre=None,  category=None, watched=0, desc=None):
+    def __init__(self, user_id, name, sqlId=None,  year=None, kinopoisk_id=None, kinopoisk_url=None, genre=None,  category="Без категории", watched=0, desc=None):
         self.sqlId = sqlId
         self.user = user_id
         self.kinopoisk_id = kinopoisk_id
@@ -17,7 +17,7 @@ class Film:
         return self.user
 
     def getId(self):
-        return self.id
+        return self.sqlId
 
     def getName(self):
         return self.name

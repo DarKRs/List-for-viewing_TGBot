@@ -36,7 +36,7 @@ def welcome(message):
 def lalala(message):
     if message.chat.type == 'private':
        match message.text:
-           case '🎲 Рандомное число': bot.send_message(message.chat.id, str(random.randint(0, 100)))
+           case '🔎 Мой список (фильтр)': callback.writeCategoryKeyboa(bot,message)
            case '📄 Мой список': func.writeFilmList(bot,message)
            case _ : func.search_f(bot,message)
             
