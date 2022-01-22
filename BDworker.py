@@ -1,8 +1,8 @@
 import sqlite3
-import kinopoisk
 import film
 import Ikp
 import func
+import callback
 
 users_dict = {}
 movies_dict_query = {}
@@ -97,8 +97,8 @@ def addMovieByTitle(user_id, film_name):
     data = cursor.fetchone()
     if data is None:
             #BD
-            film_list = [user_id, film_name, 0]
-            cursor.execute("INSERT INTO Movies(USER_ID,Name,Watched) VALUES(?,?,?);",film_list)
+            film_list = [user_id, film_name, 0,"Без категории"]
+            cursor.execute("INSERT INTO Movies(USER_ID,Name,Watched,Category) VALUES(?,?,?,?);",film_list)
             connect.commit()
             #Dict
             f_obj = film.Film(user_id=user_id,name=film_name,sqlId=getNewSqlId())
@@ -127,14 +127,39 @@ def getNewSqlId():
     return data[0]
     
 def getUserMovieCategory(user_id,category):
+    if category == 'Не просмотрено':
+        return getUserMovieNonWatched(user_id)
+    elif category == 'Просмотрено':
+        return getUserMovieWatched(user_id)
+    else:
+        list=[]
+        for f in movies_dict.get(user_id):
+            if category in f.category:
+                list.append(f)
+        return list
+
+def getUserMovieWatched(user_id):
     list=[]
+    if movies_dict.get(user_id) is None:
+        return list
     for f in movies_dict.get(user_id):
-        if category in f.category:
+        if f.watched == 1:
+            list.append(f)
+    return list
+
+def getUserMovieNonWatched(user_id):
+    list=[]
+    if movies_dict.get(user_id) is None:
+        return list
+    for f in movies_dict.get(user_id):
+        if f.watched == 0:
             list.append(f)
     return list
 
 def getUserCategories(user_id):
     list=[]
+    if movies_dict.get(user_id) is None:
+        return list
     for f in movies_dict.get(user_id):
         if f.category not in list:
             list.append(f.category)
@@ -153,6 +178,9 @@ def getFilmIdxBySqlid(sqlid,user_id):
 #Edit film
 
 def editName(message,f_id,bot):
+    if message.content_type != 'text':
+            callback.editFilmName(bot,message,f_id)
+            return
     if message.text == '❌ Отмена':
         bot.send_message(message.chat.id,'Изменение названия отменено',reply_markup=func.getStandKeyboa())
         func.writeFilmInfo(bot,message,f_id)
@@ -165,6 +193,9 @@ def editName(message,f_id,bot):
         func.writeFilmInfo(bot,message,f_id)
    
 def editUrl(message,f_id,bot):
+    if message.content_type != 'text':
+            callback.editFilmUrl(bot,message,f_id)
+            return
     if message.text == '❌ Отмена':
         bot.send_message(message.chat.id,'Изменение ссылки отменено',reply_markup=func.getStandKeyboa())
         func.writeFilmInfo(bot,message,f_id)
@@ -177,6 +208,9 @@ def editUrl(message,f_id,bot):
         func.writeFilmInfo(bot,message,f_id)
     
 def editYear(message,f_id,bot):
+    if message.content_type != 'text':
+            callback.editFilmYear(bot,message,f_id)
+            return
     if message.text == '❌ Отмена':
         bot.send_message(message.chat.id,'Изменение года отменено',reply_markup=func.getStandKeyboa())
         func.writeFilmInfo(bot,message,f_id)
@@ -189,6 +223,9 @@ def editYear(message,f_id,bot):
         func.writeFilmInfo(bot,message,f_id)
 
 def editGenre(message,f_id,bot):
+    if message.content_type != 'text':
+            callback.editFilmGenre(bot,message,f_id)
+            return
     if message.text == '❌ Отмена':
         bot.send_message(message.chat.id,'Изменение жанров отменено',reply_markup=func.getStandKeyboa())
         func.writeFilmInfo(bot,message,f_id)
@@ -201,11 +238,18 @@ def editGenre(message,f_id,bot):
         func.writeFilmInfo(bot,message,f_id)
 
 def editCategory(message,f_id,bot):
+    if message.content_type != 'text':
+            callback.editFilmCategory(bot,message,f_id)
+            return
     if message.text == '❌ Отмена':
         bot.send_message(message.chat.id,'Изменение категории отменено',reply_markup=func.getStandKeyboa())
         func.writeFilmInfo(bot,message,f_id)
         return
     else:
+        if len(message.text) > 20:
+            msg = bot.send_message(message.chat.id,'Не более 20 символов для названия категории!\nПожалуйста, введите другое название категории',reply_markup=callback.cancelKeyboa())
+            bot.register_next_step_handler(msg,editCategory,f_id,bot)
+            return
         cursor.execute(f"UPDATE Movies SET Category = '{message.text}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
         connect.commit()
         movies_dict[message.chat.id][getFilmIdxBySqlid(f_id,message.chat.id)].category = message.text
@@ -213,6 +257,9 @@ def editCategory(message,f_id,bot):
         func.writeFilmInfo(bot,message,f_id)
 
 def editDesc(message,f_id,bot):
+    if message.content_type != 'text':
+            callback.editFilmDesc(bot,message,f_id)
+            return
     if message.text == '❌ Отмена':
         bot.send_message(message.chat.id,'Изменение описания отменено',reply_markup=func.getStandKeyboa())
         func.writeFilmInfo(bot,message,f_id)
@@ -221,7 +268,7 @@ def editDesc(message,f_id,bot):
         cursor.execute(f"UPDATE Movies SET Description = '{message.text}' WHERE USER_ID = {message.chat.id} and id = {f_id}")
         connect.commit()
         movies_dict[message.chat.id][getFilmIdxBySqlid(f_id,message.chat.id)].desc = message.text
-        bot.send_message(message.chat.id,'Описание изменено на ' + message.text, reply_markup=func.getStandKeyboa())
+        bot.send_message(message.chat.id,'Описание изменено на ' + str(message.text), reply_markup=func.getStandKeyboa())
         func.writeFilmInfo(bot,message,f_id)
 
 def editWatch(message,f_id,bot,watched):
@@ -234,9 +281,8 @@ def deleteFilm(message,f_id,bot):
     if(message.text == "✔️ Да"):
         cursor.execute(f"DELETE FROM Movies WHERE USER_ID = {message.chat.id} and id = {f_id}")
         connect.commit()
-        bot.send_message(message.chat.id,'Фильм '+ movies_dict[message.chat.id][int(f_id)].name + ' удален из списка',reply_markup=func.getStandKeyboa())
+        bot.send_message(message.chat.id,'Фильм '+ movies_dict[message.chat.id][getFilmIdxBySqlid(f_id,message.chat.id)].name + ' удален из списка',reply_markup=func.getStandKeyboa())
         movies_dict[message.chat.id].pop(getFilmIdxBySqlid(f_id,message.chat.id))
-        func.writeFilmList(bot,message)
     else:
         bot.send_message(message.chat.id,'Удаление отменено',reply_markup=func.getStandKeyboa())
         return

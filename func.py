@@ -16,12 +16,14 @@ def getStandKeyboa():
     return markup
 
 def getCategoryKeyboa(user_id):
-    category_keyboa = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    category_keyboa = types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=3)
     for c in BDworker.getUserCategories(user_id):
         category_keyboa.add(types.KeyboardButton(c))
-    category_keyboa.add(types.KeyboardButton("Просмотрено"))
-    category_keyboa.add(types.KeyboardButton("Не просмотрено"))
+    category_keyboa.row(types.KeyboardButton("Просмотрено"),types.KeyboardButton("Не просмотрено"))
+   # category_keyboa.add()
+    category_keyboa.add(types.KeyboardButton("🔙 Назад"))
     return category_keyboa
+
 
 def search_f(bot,message):
     film_obj_list = Ikp.search_film_by_name(message.text)
@@ -40,7 +42,7 @@ def search_f(bot,message):
 
 def writeFilmList(bot,message):
     films = BDworker.getUserFilms(message.chat.id)
-    if films != None:
+    if films != None and films != []:
         text = makeFilmListText(films,1)
         films_items = makeFilmListKeyboa(films,1)
         if len(films) % 12 == 0:
@@ -56,32 +58,63 @@ def writeFilmList(bot,message):
 
         bot.send_message(message.chat.id, text, reply_markup=keyboard)
     else:
-        bot.send_message(message.chat.id, "В вашем списке нет фильмов!\n\rНапишите мне название фильма, и я добавлю его в список!")
+        bot.send_message(message.chat.id, "В вашем списке нет фильмов!\n\rНапишите мне название фильма, и я добавлю его в список!",reply_markup=getStandKeyboa())
 
 def writeFilmListCategory(message,bot):
+    if message.text == '🔙 Назад':
+        bot.send_message(message.chat.id, text="Возврат в основное меню", reply_markup=getStandKeyboa())
+        return
     films = BDworker.getUserMovieCategory(message.chat.id,message.text)
-    if films != None:
+    if films != None and films != []:
         text = makeFilmListText(films,1)
         films_items = makeFilmListKeyboa(films,1)
         if len(films) % 12 == 0:
             end_idx = len(films) - 11
         else:
             end_idx = (len(films) - len(films) % 12)+1
-        items_control =[{"⏮":"&page=1"}, {"⏪":"&page=-1"}, {"⏹":"&page=1"}, {"⏩":"&page=13"}, {"⏭":"&page=" + str(end_idx)}]
+        items_control =[{"⏮":"&cf="+message.text+"&page=1"}, {"⏪":"&cf="+message.text+"&page=-1"}, {"⏹":"&cf="+message.text+"&page=1"}, {"⏩":"&cf="+message.text+"&page=13"}, {"⏭":"&cf="+message.text+"&page=" + str(end_idx)}]
 
         kb_film = Keyboa(items=films_items, items_in_row=6, copy_text_to_callback=True,front_marker="&sf_id=").keyboard #Selected film
         kb_control = Keyboa(items=items_control, items_in_row=5, copy_text_to_callback=True,front_marker="&sf_id=").keyboard
 
         keyboard = Keyboa.combine(keyboards=(kb_film, kb_control))
 
+        bot.send_message(message.chat.id, 'Список по категории ' + message.text + ':', reply_markup=getStandKeyboa())
         bot.send_message(message.chat.id, text, reply_markup=keyboard)
     else:
-        bot.send_message(message.chat.id, "В вашем списке нет фильмов!\n\rНапишите мне название фильма, и я добавлю его в список!")
+        bot.send_message(message.chat.id, "В вашем списке нет фильмов!\n\rНапишите мне название фильма, и я добавлю его в список!",reply_markup=getStandKeyboa())
+
+def writeFilmListPageCategory(bot,call,idx,category):
+    message = call.message
+    films = BDworker.getUserMovieCategory(message.chat.id,category)
+    if films != None and films != []:
+        if idx < 1 or idx > len(films):
+            bot.answer_callback_query(callback_query_id=call.id, show_alert=False, text=getRndEndMessage())
+            return
+        text = makeFilmListText(films,idx)
+        films_items = makeFilmListKeyboa(films,idx)
+        if len(films) % 12 == 0:
+            end_idx = len(films) - 11
+        else:
+            end_idx = (len(films) - len(films) % 12)+1
+        items_control =[{"⏮":"&cf="+category+"&page=1"},{"⏪":"&cf="+category+"&page=" + str(idx-12)}, {"⏹":"&cf="+category+"&page=" + str(idx)}, {"⏩":"&cf="+category+"&page=" + str(idx+12)}, {"⏭":"&cf="+category+"&page=" + str(end_idx)}]
+        
+        kb_film = Keyboa(items=films_items, items_in_row=6, copy_text_to_callback=True,front_marker="&sf_id=").keyboard #Selected film
+        kb_control = Keyboa(items=items_control, items_in_row=5, copy_text_to_callback=True,front_marker="&sf_id=").keyboard
+
+        keyboard = Keyboa.combine(keyboards=(kb_film, kb_control))
+
+        if text == message.text + "\n":
+            bot.answer_callback_query(callback_query_id=call.id, show_alert=False, text=getRndPushMessage())
+            return
+        bot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text=text,reply_markup=keyboard)
+    else:
+        bot.send_message(message.chat.id, "В вашем списке нет фильмов!\n\rНапишите мне название фильма, и я добавлю его в список!",reply_markup=getStandKeyboa())
 
 def writeFilmListPage(bot,call,idx):
     message = call.message
     films = BDworker.getUserFilms(message.chat.id)
-    if films != None:
+    if films != None and films != []:
         if idx < 1 or idx > len(films):
             bot.answer_callback_query(callback_query_id=call.id, show_alert=False, text=getRndEndMessage())
             return
@@ -103,7 +136,7 @@ def writeFilmListPage(bot,call,idx):
             return
         bot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text=text,reply_markup=keyboard)
     else:
-        bot.send_message(message.chat.id, "В вашем списке нет фильмов!\n\rНапишите мне название фильма, и я добавлю его в список!")
+        bot.send_message(message.chat.id, "В вашем списке нет фильмов!\n\rНапишите мне название фильма, и я добавлю его в список!",reply_markup=getStandKeyboa())
 
 def writeFilmInfo(bot,message,id):
     film = BDworker.getFilmBySqlid(id,message.chat.id)
@@ -124,7 +157,7 @@ def writeFilmInfo(bot,message,id):
 
     keyboard = Keyboa.combine(keyboards=(kb_edit, kb_watch))
 
-    bot.send_message(message.chat.id, text, reply_markup=keyboard, parse_mode= "Markdown")
+    bot.send_message(message.chat.id, text, reply_markup=keyboard)
 
 def editFilmInfo(bot,message,id):
     film = BDworker.getFilmBySqlid(id,message.chat.id)
@@ -229,19 +262,18 @@ def makeMovieText(film):
     else:
         text += " ( " + film.kinopoisk_url + " ) "
     if film.watched == 1:
-        text += "\n\r*Просмотрено*"
+        text += "\n\r*Просмотрено*  👁‍🗨"
+    text += "\n\n\rКатегория: " + film.category
+    if film.year == 'None':
+        text += "\n\n\rГод не указан"
     else:
-        text += "\n"
-    if film.year is None:
-        text += "\n\n\r Год не указан"
-    else:
-        text += "\n\n\r Год:" + film.year
+        text += "\n\n\rГод:" + film.year
     if film.genre is None:
-        text += "\n\n\r Жанры не указаны"
+        text += "\n\n\rЖанры не указаны"
     else:
-        text += "\n\n\r Жанры:" + str(film.genre)
+        text += "\n\n\rЖанры:" + str(film.genre)
     if film.desc is None:
-        text += "\n\n\r Описание не указано"
+        text += "\n\n\rОписание не указано"
     else:
         text += "\n\n\r" + film.desc
     return text

@@ -7,7 +7,7 @@ from telebot import types
 #Category film
 
 def writeCategoryKeyboa(bot,message):
-    msg = bot.send_message(message.chat.id,'Выберите категорию', reply_markup=func.getCategoryKeyboa(message.chat.id))
+    msg = bot.send_message(message.chat.id,'Выберите категорию из списка', reply_markup=func.getCategoryKeyboa(message.chat.id))
     bot.register_next_step_handler(msg,func.writeFilmListCategory,bot)
    
 
@@ -30,7 +30,7 @@ def editFilmGenre(bot,message,id):
     bot.register_next_step_handler(msg,BDworker.editGenre,id,bot)
 
 def editFilmCategory(bot,message,id):
-    msg = bot.send_message(message.chat.id,'Пожалуйста, введите категорию \n Стандартные категории: Фильм, Мультфильм, Аниме фильм, Сериал, Мультсериал, Аниме сериал',reply_markup=cancelKeyboa())
+    msg = bot.send_message(message.chat.id,'Пожалуйста, введите категорию \nСтандартные категории: Фильм, Мультфильм, Аниме фильм, Сериал, Мультсериал, Аниме сериал \nВнимание! Название категории не более 20 символов',reply_markup=cancelKeyboa())
     bot.register_next_step_handler(msg,BDworker.editCategory,id,bot)
 
 def editFilmDesc(bot,message,id):

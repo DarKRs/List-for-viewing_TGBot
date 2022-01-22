@@ -54,7 +54,9 @@ def callback_inline(call):
                     BDworker.addMovie(call.data.split("=")[1], call.message.chat.id)
                     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Фильм - ' + str(Ikp.get_film_by_id(call.data.split("=")[1]).name) + ' Добавлен в ваш список :)')
             elif '&sf_id' in call.data:     #Selected film
-                if '&page=' in call.data:
+                if '&cf=' in call.data:
+                    func.writeFilmListPageCategory(bot,call,int(call.data.split("=")[3]),call.data.split("=")[2].split('&')[0])
+                elif '&page=' in call.data:
                     func.writeFilmListPage(bot,call,int(call.data.split("=")[2]))
                 else:
                     func.writeFilmInfo(bot,call.message,call.data.split("=")[1])
