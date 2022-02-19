@@ -55,9 +55,15 @@ def callback_inline(call):
                     bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Фильм - ' + str(Ikp.get_film_by_id(call.data.split("=")[1]).name) + ' Добавлен в ваш список :)')
             elif '&sf_id' in call.data:     #Selected film
                 if '&cf=' in call.data:
-                    func.writeFilmListPageCategory(bot,call,int(call.data.split("=")[3]),call.data.split("=")[2].split('&')[0])
+                    if 'rnd' in call.data.split("=")[3]:
+                        func.writeFilmListRandom(bot,call,call.data.split("=")[2].split('&')[0])
+                    else:
+                        func.writeFilmListPageCategory(bot,call,int(call.data.split("=")[3]),call.data.split("=")[2].split('&')[0])
                 elif '&page=' in call.data:
-                    func.writeFilmListPage(bot,call,int(call.data.split("=")[2]))
+                    if 'rnd' in call.data.split("=")[2]:
+                        func.writeFilmListRandom(bot,call)
+                    else:
+                        func.writeFilmListPage(bot,call,int(call.data.split("=")[2]))
                 else:
                     func.writeFilmInfo(bot,call.message,call.data.split("=")[1])
             elif '&ef_id=' in call.data:    #Edit film

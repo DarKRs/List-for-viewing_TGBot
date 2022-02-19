@@ -49,7 +49,7 @@ def writeFilmList(bot,message):
             end_idx = len(films) - 11
         else:
             end_idx = (len(films) - len(films) % 12)+1
-        items_control =[{"⏮":"&page=1"}, {"⏪":"&page=-1"}, {"⏹":"&page=1"}, {"⏩":"&page=13"}, {"⏭":"&page=" + str(end_idx)}]
+        items_control =[{"⏮":"&page=1"}, {"⏪":"&page=-1"}, {"🎲":"&page=rnd"}, {"⏩":"&page=13"}, {"⏭":"&page=" + str(end_idx)}]
 
         kb_film = Keyboa(items=films_items, items_in_row=6, copy_text_to_callback=True,front_marker="&sf_id=").keyboard #Selected film
         kb_control = Keyboa(items=items_control, items_in_row=5, copy_text_to_callback=True,front_marker="&sf_id=").keyboard
@@ -72,7 +72,7 @@ def writeFilmListCategory(message,bot):
             end_idx = len(films) - 11
         else:
             end_idx = (len(films) - len(films) % 12)+1
-        items_control =[{"⏮":"&cf="+message.text+"&page=1"}, {"⏪":"&cf="+message.text+"&page=-1"}, {"⏹":"&cf="+message.text+"&page=1"}, {"⏩":"&cf="+message.text+"&page=13"}, {"⏭":"&cf="+message.text+"&page=" + str(end_idx)}]
+        items_control =[{"⏮":"&cf="+message.text+"&page=1"}, {"⏪":"&cf="+message.text+"&page=-1"}, {"🎲":"&cf="+message.text+"&page=rnd"}, {"⏩":"&cf="+message.text+"&page=13"}, {"⏭":"&cf="+message.text+"&page=" + str(end_idx)}]
 
         kb_film = Keyboa(items=films_items, items_in_row=6, copy_text_to_callback=True,front_marker="&sf_id=").keyboard #Selected film
         kb_control = Keyboa(items=items_control, items_in_row=5, copy_text_to_callback=True,front_marker="&sf_id=").keyboard
@@ -97,7 +97,7 @@ def writeFilmListPageCategory(bot,call,idx,category):
             end_idx = len(films) - 11
         else:
             end_idx = (len(films) - len(films) % 12)+1
-        items_control =[{"⏮":"&cf="+category+"&page=1"},{"⏪":"&cf="+category+"&page=" + str(idx-12)}, {"⏹":"&cf="+category+"&page=" + str(idx)}, {"⏩":"&cf="+category+"&page=" + str(idx+12)}, {"⏭":"&cf="+category+"&page=" + str(end_idx)}]
+        items_control =[{"⏮":"&cf="+category+"&page=1"},{"⏪":"&cf="+category+"&page=" + str(idx-12)}, {"🎲":"&cf="+category+"&page=rnd"}, {"⏩":"&cf="+category+"&page=" + str(idx+12)}, {"⏭":"&cf="+category+"&page=" + str(end_idx)}]
         
         kb_film = Keyboa(items=films_items, items_in_row=6, copy_text_to_callback=True,front_marker="&sf_id=").keyboard #Selected film
         kb_control = Keyboa(items=items_control, items_in_row=5, copy_text_to_callback=True,front_marker="&sf_id=").keyboard
@@ -108,6 +108,32 @@ def writeFilmListPageCategory(bot,call,idx,category):
             bot.answer_callback_query(callback_query_id=call.id, show_alert=False, text=getRndPushMessage())
             return
         bot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text=text,reply_markup=keyboard)
+    else:
+        bot.send_message(message.chat.id, "В вашем списке нет фильмов!\n\rНапишите мне название фильма, и я добавлю его в список!",reply_markup=getStandKeyboa())
+
+def writeFilmListRandom(bot,call,category = "None"):
+    message = call.message
+    films_all = []
+    if category == "None":
+       films_all = BDworker.getUserFilms(message.chat.id)
+    else:
+        films_all = BDworker.getUserMovieCategory(message.chat.id,category)
+    films = getRandomFilms(films_all,category)
+    if films != None and films != []:
+        text = makeRndFilmListText(films,category)
+        films_items = makeRndFilmListKeyboa(films)
+        items_control =[{"🎲":"&cf="+category+"&page=rnd"}]
+        
+        kb_film = Keyboa(items=films_items, items_in_row=6, copy_text_to_callback=True,front_marker="&sf_id=").keyboard #Selected film
+        kb_control = Keyboa(items=items_control, items_in_row=5, copy_text_to_callback=True,front_marker="&sf_id=").keyboard
+
+        keyboard = Keyboa.combine(keyboards=(kb_film, kb_control))
+
+        if text == message.text + "\n":
+            bot.answer_callback_query(callback_query_id=call.id, show_alert=False, text=getRndPushMessage())
+            return
+        #bot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text=text,reply_markup=keyboard)
+        bot.send_message(message.chat.id, text, reply_markup=keyboard)
     else:
         bot.send_message(message.chat.id, "В вашем списке нет фильмов!\n\rНапишите мне название фильма, и я добавлю его в список!",reply_markup=getStandKeyboa())
 
@@ -124,7 +150,7 @@ def writeFilmListPage(bot,call,idx):
             end_idx = len(films) - 11
         else:
             end_idx = (len(films) - len(films) % 12)+1
-        items_control =[{"⏮":"&page=1"},{"⏪":"&page=" + str(idx-12)}, {"⏹":"&page=" + str(idx)}, {"⏩":"&page=" + str(idx+12)}, {"⏭":"&page=" + str(end_idx)}]
+        items_control =[{"⏮":"&page=1"},{"⏪":"&page=" + str(idx-12)}, {"🎲":"&page=rnd"}, {"⏩":"&page=" + str(idx+12)}, {"⏭":"&page=" + str(end_idx)}]
         
         kb_film = Keyboa(items=films_items, items_in_row=6, copy_text_to_callback=True,front_marker="&sf_id=").keyboard #Selected film
         kb_control = Keyboa(items=items_control, items_in_row=5, copy_text_to_callback=True,front_marker="&sf_id=").keyboard
@@ -277,3 +303,51 @@ def makeMovieText(film):
     else:
         text += "\n\n\r" + film.desc
     return text
+
+
+#Random Films
+
+def getRandomFilms(films,category="None"):
+    rndfilms = []
+    if category != "Просмотрено":
+        for film in films:
+            if film.watched == False:
+                rndfilms.append(film)
+        if len(rndfilms) < 3:
+            return random.sample(rndfilms,len(rndfilms))
+        else:
+            return random.sample(rndfilms,3)
+    else:
+       if len(rndfilms) < 3:
+            return random.sample(films,len(films))
+       else:
+            return random.sample(films,3)
+#    while len(rndfilms) < 3:
+#     films.where
+#     film = random.choice(films)
+#     if category == "Просмотрено":
+#       if film not in rndfilms:
+#        rndfilms.append(film)
+#     if film.watched == False:
+#        if film not in rndfilms:
+#            rndfilms.append(film)
+#   return rndfilms
+
+def makeRndFilmListText(films,category = "None"):
+    films_list_text = ""
+    if category == "None":
+        films_list_text = "Ваши случайные фильмы: \n"
+    else:
+        films_list_text = "Ваши случайные фильмы по категории " + category + " : \n"
+    for i,film in enumerate(films,1):
+        if(films[i-1].watched == 1):
+            films_list_text += str(i) + '. ' + str(films[i-1].name) + '  👁‍🗨\n'
+        else:
+            films_list_text += str(i) + '. ' + str(films[i-1].name) + '\n'
+    return films_list_text
+
+def makeRndFilmListKeyboa(films):
+    film_list_kb=[]
+    for i,film in enumerate(films,1):
+        film_list_kb.append({str(i):film.sqlId})
+    return film_list_kb         
