@@ -3,7 +3,9 @@ import film
 import Ikp
 import func
 import callback
+from User import User
 
+users_dict_query = {}
 users_dict = {}
 movies_dict_query = {}
 movies_dict = {}
@@ -15,7 +17,8 @@ def Init():
     #Users
     cursor.execute("""CREATE TABLE IF NOT EXISTS Users(
         id INTEGER PRIMARY KEY,
-        UserName TEXT
+        UserName TEXT,
+        Timer INTEGER
     )""")
     connect.commit()
 
@@ -36,7 +39,9 @@ def Init():
     #Dictionarys
     #connect.row_factory = dict_factory
     cursor.execute("SELECT * FROM Users")
-    users_dict = cursor.fetchall()
+    users_dict_query = cursor.fetchall()
+    for user in users_dict_query:
+        users_dict.update({user[0]:convertSQLToUser(user)})
     cursor.execute("SELECT * FROM Movies")
     movies_dict_query = cursor.fetchall()
     for movie in movies_dict_query:
@@ -53,9 +58,9 @@ def addUser(message):
     data = cursor.fetchone()
     if data is None:
             #BD
-            user_id = [message.chat.id, message.from_user.username]
-            user_id_dict = { message.chat.id: message.from_user.username}
-            cursor.execute("INSERT INTO Users VALUES(?,?);",user_id)
+            user_id = [message.chat.id, message.from_user.username,1]
+            user_id_dict = { message.chat.id: User(message.chat.id,message.from_user.username,1)}
+            cursor.execute("INSERT INTO Users VALUES(?,?,?);",user_id)
             connect.commit()
             #Dict
             users_dict.update(user_id_dict)
@@ -113,7 +118,13 @@ def addMovieByTitle(user_id, film_name):
 
 def getUserFilms(user_id):
     return movies_dict.get(user_id)
+
+def getUser(user_id):
+    return users_dict.get(user_id)
     
+def convertSQLToUser(user):
+    return User(user[0],user[1],user[2])
+
 def convertSQLToFilm(movie):
     return film.Film(movie[9],movie[1],movie[0],movie[2],movie[3],movie[4],movie[5],movie[6],movie[7], movie[8])
 
@@ -286,3 +297,10 @@ def deleteFilm(message,f_id,bot):
     else:
         bot.send_message(message.chat.id,'Удаление отменено',reply_markup=func.getStandKeyboa())
         return
+
+#Edit user
+
+def editTimer(user_id,timer):
+    cursor.execute(f"UPDATE Users SET Timer = '{timer}' WHERE id = {user_id}")
+    connect.commit()
+    users_dict[user_id].timer = timer

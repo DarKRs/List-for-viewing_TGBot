@@ -29,7 +29,7 @@ def welcome(message):
     bot.send_message(message.chat.id,
                      "Добро пожаловать, {0.first_name}!\nЯ - , бот созданный чтобы запоминать фильмы, мультфильмы, сериалы и т.д. необходымые к просмотру. \nЧто то вроде блокнотика с фильмами ;).".format(
                          message.from_user),
-                     parse_mode='html', reply_markup=func.getStandKeyboa())
+                     parse_mode='html', reply_markup=func.getStandKeyboa(message.chat.id))
 
 
 @bot.message_handler(content_types=['text'])
@@ -38,6 +38,16 @@ def lalala(message):
        match message.text:
            case '🔎 Мой список (фильтр)': callback.writeCategoryKeyboa(bot,message)
            case '📄 Мой список': func.writeFilmList(bot,message)
+           case '⏰ Включить таймер': 
+               func.setTimer(message.chat.id,1)
+               bot.send_message(message.chat.id,
+                     "Таймер включен! Я изредко буду предлагать тебе посмотреть фильм",
+                      reply_markup=func.getStandKeyboa(message.chat.id))
+           case '⏰ Выключить таймер': 
+               func.setTimer(message.chat.id,0)
+               bot.send_message(message.chat.id,
+                     "Таймер выключен! Я больше не буду предлагать тебе посмотреть фильм",
+                      reply_markup=func.getStandKeyboa(message.chat.id))
            case _ : func.search_f(bot,message)
             
 

@@ -7,12 +7,17 @@ import random
 from telebot import types
 from keyboa import Keyboa
 
-def getStandKeyboa():
+def getStandKeyboa(userID):
     # keyboard
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=2)
     item1 = types.KeyboardButton("🔎 Мой список (фильтр)")
     item3 = types.KeyboardButton("📄 Мой список")
-    markup.add(item1, item3)
+    timer = BDworker.getUser(userID).timer
+    if timer == None or timer == 0:
+        item4 = types.KeyboardButton("⏰ Включить таймер")
+    else:
+        item4 = types.KeyboardButton("⏰ Выключить таймер")
+    markup.add(item1, item3,item4)
     return markup
 
 def getCategoryKeyboa(user_id):
@@ -207,6 +212,10 @@ def editFilmInfo(bot,message,id):
     bot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text=text,reply_markup=keyboard, parse_mode= "Markdown")
 
 
+#Reminder
+
+def setTimer(userID, timer):
+    BDworker.editTimer(userID,timer)
 
 #Formating text (SearchFilm)
 
@@ -322,16 +331,6 @@ def getRandomFilms(films,category="None"):
             return random.sample(films,len(films))
        else:
             return random.sample(films,3)
-#    while len(rndfilms) < 3:
-#     films.where
-#     film = random.choice(films)
-#     if category == "Просмотрено":
-#       if film not in rndfilms:
-#        rndfilms.append(film)
-#     if film.watched == False:
-#        if film not in rndfilms:
-#            rndfilms.append(film)
-#   return rndfilms
 
 def makeRndFilmListText(films,category = "None"):
     films_list_text = ""
